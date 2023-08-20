@@ -1200,26 +1200,26 @@
 			},
 			async getSales(){
 				await axios.post('/get_orders', {salesId: this.sales.salesId}).then(res=>{
-					let r = res.data;
-					let sales = r.sales[0];
-					this.sales.salesBy = sales.AddBy;
-					this.sales.salesFrom = sales.SaleMaster_branchid;
-					this.sales.salesDate = sales.SaleMaster_SaleDate;
-					this.sales.paymentType = sales.payment_type;
-					this.sales.account_id = sales.account_id;
-					this.sales.customerId = sales.SalseCustomer_IDNo;
-					this.sales.employeeId = sales.Employee_SlNo;
-					this.sales.subTotal = sales.SaleMaster_SubTotalAmount;
-					this.sales.returnTotal = sales.SaleMaster_ReturnTotal;
-					this.sales.damageTotal = sales.SaleMaster_DamageTotal;
-					this.sales.discount = sales.SaleMaster_TotalDiscountAmount;
-					this.sales.vat = sales.SaleMaster_TaxAmount;
-					this.sales.transportCost = sales.SaleMaster_Freight;
-					this.sales.total = sales.SaleMaster_TotalSaleAmount;
-					this.sales.paid = sales.SaleMaster_PaidAmount;
-					this.sales.previousDue = sales.SaleMaster_Previous_Due;
-					this.sales.due = sales.SaleMaster_DueAmount;
-					this.sales.note = sales.SaleMaster_Description;
+					let r                        = res.data;
+					let sales                    = r.sales[0];
+					    this.sales.salesBy       = sales.AddBy;
+					    this.sales.salesFrom     = sales.SaleMaster_branchid;
+					    this.sales.salesDate     = sales.SaleMaster_SaleDate;
+					    this.sales.paymentType   = sales.payment_type;
+					    this.sales.account_id    = sales.account_id;
+					    this.sales.customerId    = sales.SalseCustomer_IDNo;
+					    this.sales.employeeId    = sales.Employee_SlNo;
+					    this.sales.subTotal      = sales.SaleMaster_SubTotalAmount;
+					    this.sales.returnTotal   = sales.SaleMaster_ReturnTotal;
+					    this.sales.damageTotal   = sales.SaleMaster_DamageTotal;
+					    this.sales.discount      = sales.SaleMaster_TotalDiscountAmount;
+					    this.sales.vat           = sales.SaleMaster_TaxAmount;
+					    this.sales.transportCost = sales.SaleMaster_Freight;
+					    this.sales.total         = sales.SaleMaster_TotalSaleAmount;
+					    this.sales.paid          = sales.SaleMaster_PaidAmount;
+					    this.sales.previousDue   = sales.SaleMaster_Previous_Due;
+					    this.sales.due           = sales.SaleMaster_DueAmount;
+					    this.sales.note          = sales.SaleMaster_Description;
 
 					this.oldCustomerId = sales.SalseCustomer_IDNo;
 					this.oldPreviousDue = sales.SaleMaster_Previous_Due;
@@ -1240,25 +1240,25 @@
 					}
 
 					this.selectedCustomer = {
-						Customer_SlNo: sales.SalseCustomer_IDNo,
-						Customer_Code: sales.Customer_Code,
-						Customer_Name: sales.Customer_Name,
-						display_name: sales.Customer_Type == 'G' ? 'General Customer' : `${sales.Customer_Code} - ${sales.Customer_Name}`,
-						Customer_Mobile: sales.Customer_Mobile,
+						Customer_SlNo   : sales.SalseCustomer_IDNo,
+						Customer_Code   : sales.Customer_Code,
+						Customer_Name   : sales.Customer_Name,
+						display_name    : sales.Customer_Type == 'G' ? 'General Customer': `${sales.Customer_Code} - ${sales.Customer_Name}`,
+						Customer_Mobile : sales.Customer_Mobile,
 						Customer_Address: sales.Customer_Address,
-						Customer_Type: sales.Customer_Type
+						Customer_Type   : sales.Customer_Type
 					}
 
 					r.saleDetails.forEach(product => {
 						let cartProduct = {
 							productCode : product.Product_Code,
-							productId: product.Product_IDNo,
+							productId   : product.Product_IDNo,
 							categoryName: product.ProductCategory_Name,
-							name: product.Product_Name,
-							salesRate: product.SaleDetails_Rate,
-							vat: product.SaleDetails_Tax,
-							quantity: product.SaleDetails_TotalQuantity,
-							total: product.SaleDetails_TotalAmount,
+							name        : product.Product_Name,
+							salesRate   : product.SaleDetails_Rate,
+							vat         : product.SaleDetails_Tax,
+							quantity    : product.SaleDetails_TotalQuantity,
+							total       : product.SaleDetails_TotalAmount,
 							purchaseRate: product.Purchase_Rate,
 						}
 

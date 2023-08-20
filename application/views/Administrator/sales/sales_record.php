@@ -1,59 +1,74 @@
 <style>
-    .v-select{
-		margin-top:-2.5px;
-        float: right;
-        min-width: 180px;
-        margin-left: 5px;
+	.v-select {
+		margin-top: -2.5px;
+		float: right;
+		min-width: 180px;
+		margin-left: 5px;
 	}
-	.v-select .dropdown-toggle{
+
+	.v-select .dropdown-toggle {
 		padding: 0px;
-        height: 25px;
+		height: 25px;
 	}
-	.v-select input[type=search], .v-select input[type=search]:focus{
+
+	.v-select input[type=search],
+	.v-select input[type=search]:focus {
 		margin: 0px;
 	}
-	.v-select .vs__selected-options{
+
+	.v-select .vs__selected-options {
 		overflow: hidden;
-		flex-wrap:nowrap;
+		flex-wrap: nowrap;
 	}
-	.v-select .selected-tag{
+
+	.v-select .selected-tag {
 		margin: 2px 0px;
 		white-space: nowrap;
-		position:absolute;
+		position: absolute;
 		left: 0px;
 	}
-	.v-select .vs__actions{
-		margin-top:-5px;
+
+	.v-select .vs__actions {
+		margin-top: -5px;
 	}
-	.v-select .dropdown-menu{
+
+	.v-select .dropdown-menu {
 		width: auto;
-		overflow-y:auto;
+		overflow-y: auto;
 	}
-	#searchForm select{
-		padding:0;
+
+	#searchForm select {
+		padding: 0;
 		border-radius: 4px;
 	}
-	#searchForm .form-group{
+
+	#searchForm .form-group {
 		margin-right: 5px;
 	}
-	#searchForm *{
+
+	#searchForm * {
 		font-size: 13px;
 	}
-	.record-table{
+
+	.record-table {
 		width: 100%;
 		border-collapse: collapse;
 	}
-	.record-table thead{
+
+	.record-table thead {
 		background-color: #0097df;
-		color:white;
+		color: white;
 	}
-	.record-table th, .record-table td{
+
+	.record-table th,
+	.record-table td {
 		padding: 3px;
 		border: 1px solid #454545;
 	}
-    .record-table th{
-        text-align: center;
-    }
+
+	.record-table th {
+		text-align: center;
+	}
 </style>
 <div id="salesRecord">
 	<div class="row" style="border-bottom: 1px solid #ccc;padding: 3px 0;">
@@ -125,12 +140,7 @@
 		</div>
 		<div class="col-md-12">
 			<div class="table-responsive" id="reportContent">
-				<table 
-					class="record-table" 
-					v-if="(searchTypesForRecord.includes(searchType)) && recordType == 'with_details'" 
-					style="display:none" 
-					v-bind:style="{display: (searchTypesForRecord.includes(searchType)) && recordType == 'with_details' ? '' : 'none'}"
-					>
+				<table class="record-table" v-if="(searchTypesForRecord.includes(searchType)) && recordType == 'with_details'" style="display:none" v-bind:style="{display: (searchTypesForRecord.includes(searchType)) && recordType == 'with_details' ? '' : 'none'}">
 					<thead>
 						<tr>
 							<th>Invoice No.</th>
@@ -142,7 +152,6 @@
 							<th>Price</th>
 							<th>O. Qty</th>
 							<th>O. Total</th>
-							<th>R. Qty</th>
 							<th>S. Qty</th>
 							<th>Total</th>
 							<th>Action</th>
@@ -160,16 +169,15 @@
 								<td style="text-align:right;">{{ sale.saleDetails[0].SaleDetails_Rate }}</td>
 								<td style="text-align:center;">{{ sale.saleDetails[0].SaleDetails_TotalQuantity }}</td>
 								<td style="text-align:right;">{{ sale.saleDetails[0].SaleDetails_TotalAmount }}</td>
-								<td style="text-align:center;">{{ sale.saleDetails[0].returnQty }}</td>
 								<td style="text-align:center;">{{ sale.saleDetails[0].Quantity }}</td>
 								<td style="text-align:right;">{{ sale.saleDetails[0].totalAmount }}</td>
 								<td style="text-align:center;">
 									<a href="" title="Sale Invoice" v-bind:href="`/sale_invoice_print/${sale.SaleMaster_SlNo}`" target="_blank"><i class="fa fa-file"></i></a>
 									<a href="" title="Chalan" v-bind:href="`/chalan/${sale.SaleMaster_SlNo}`" target="_blank"><i class="fa fa-file-o"></i></a>
-									<?php if($this->session->userdata('accountType') != 'u'){?>
-									<a href="javascript:" title="Edit Sale" @click="checkReturnAndEdit(sale)"><i class="fa fa-edit"></i></a>
-									<a href="" title="Delete Sale" @click.prevent="deleteSale(sale.SaleMaster_SlNo)"><i class="fa fa-trash"></i></a>
-									<?php }?>
+									<?php if ($this->session->userdata('accountType') != 'u') { ?>
+										<a href="javascript:" title="Edit Sale" @click="checkReturnAndEdit(sale)"><i class="fa fa-edit"></i></a>
+										<a href="" title="Delete Sale" @click.prevent="deleteSale(sale.SaleMaster_SlNo)"><i class="fa fa-trash"></i></a>
+									<?php } ?>
 								</td>
 							</tr>
 							<tr v-for="(product, sl) in sale.saleDetails.slice(1)">
@@ -178,20 +186,18 @@
 								<td style="text-align:right;">{{ product.SaleDetails_Rate }}</td>
 								<td style="text-align:center;">{{ product.SaleDetails_TotalQuantity }}</td>
 								<td style="text-align:right;">{{ product.SaleDetails_TotalAmount }}</td>
-								<td style="text-align:center;">{{ product.returnQty }}</td>
 								<td style="text-align:center;">{{ product.Quantity }}</td>
 								<td style="text-align:right;">{{ parseFloat(product.totalAmount).toFixed(2) }}</td>
 								<td></td>
 							</tr>
 							<tr style="font-weight:bold;">
-								<td colspan="7" style="font-weight:normal;"><strong>Note: </strong>{{ sale.SaleMaster_Description }}</td>
+								<td colspan="6" style="font-weight:normal;"><strong>Note: </strong>{{ sale.SaleMaster_Description }}</td>
 								<td style="text-align:center;">Total <br>{{ sale.saleDetails.reduce((prev, curr) => {return prev + parseFloat(curr.SaleDetails_TotalQuantity)}, 0) }}</td>
 								<td></td>
 								<td style="text-align:center;">Total <br>{{ sale.saleDetails.reduce((prev, curr) => {return prev + parseFloat(curr.returnQty)}, 0) }}</td>
 								<td style="text-align:center;">Total <br>{{ sale.saleDetails.reduce((prev, curr) => {return prev + parseFloat(curr.Quantity)}, 0) }}</td>
 								<td style="text-align:right;">
 									Total: {{ sale.SaleMaster_TotalSaleAmount }}<br>
-									Return: {{ sale.SaleMaster_ReturnTotal }}<br>
 									Damage: {{ sale.SaleMaster_DamageTotal }}<br>
 									Paid: {{ sale.SaleMaster_PaidAmount }}<br>
 									Due: {{ sale.SaleMaster_DueAmount }}
@@ -202,12 +208,46 @@
 					</tbody>
 				</table>
 
-				<table 
-					class="record-table" 
-					v-if="(searchTypesForRecord.includes(searchType)) && recordType == 'without_details'" 
-					style="display:none" 
-					v-bind:style="{display: (searchTypesForRecord.includes(searchType)) && recordType == 'without_details' ? '' : 'none'}"
-					>
+				<table class="record-table" v-if="searchType == 'employee' && selectedEmployee != null && recordType == 'with_details'" style="display:none;margin-top:10px;" v-bind:style="{display: searchType == 'employee' && selectedEmployee != null && recordType == 'with_details' ? '' : 'none'}">
+					<thead style="background: red;">
+						<tr>
+							<td colspan="4">
+								<h3 style="margin: 0;">Return Quantity</h3>
+							</td>
+						</tr>
+						<tr>
+							<th>Product Code</th>
+							<th>Product Name</th>
+							<th>Return Quantity</th>
+							<th>Total Price</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="item in returnEmployees">
+							<td>{{item.Product_Code}}</td>
+							<td>{{item.Product_Name}}</td>
+							<td>{{item.quantity}}</td>
+							<td align="center">{{item.total}}</td>
+						</tr>
+						<tr>
+							<th colspan="3">Total</th>
+							<th>
+								{{returnEmployees.reduce((acc, pre) => {return acc + +parseFloat(pre.total)},0).toFixed(2)}}
+							</th>
+						</tr>
+					</tbody>
+				</table>
+				<table class="record-table" v-if="searchType == 'employee' && selectedEmployee != null && recordType == 'with_details'" style="display:none;margin-top:10px;" v-bind:style="{display: searchType == 'employee' && selectedEmployee != null && recordType == 'with_details' ? '' : 'none'}">
+					<tbody>
+						<tr>
+							<th>Grand Total</th>
+							<th colspan="3"> {{sales.reduce((acc, pre) => {return acc + +parseFloat(pre.SaleMaster_TotalSaleAmount)},0).toFixed(2)}} - {{returnEmployees.reduce((acc, pre) => {return acc + +parseFloat(pre.total)},0).toFixed(2)}}</th>
+							<th>{{parseFloat(sales.reduce((acc, pre) => {return acc + +parseFloat(pre.SaleMaster_TotalSaleAmount)},0) -  returnEmployees.reduce((acc, pre) => {return acc + +parseFloat(pre.total)},0)).toFixed(2)}}</th>
+						</tr>
+					</tbody>
+				</table>
+
+				<table class="record-table" v-if="(searchTypesForRecord.includes(searchType)) && recordType == 'without_details'" style="display:none" v-bind:style="{display: (searchTypesForRecord.includes(searchType)) && recordType == 'without_details' ? '' : 'none'}">
 					<thead>
 						<tr>
 							<th>Invoice No.</th>
@@ -223,7 +263,7 @@
 							<th>Paid</th>
 							<th>Due</th>
 							<th>Note</th>
-							<th>Action</th>
+							<th class="action">Action</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -241,13 +281,13 @@
 							<td style="text-align:right;">{{ sale.SaleMaster_PaidAmount }}</td>
 							<td style="text-align:right;">{{ sale.SaleMaster_DueAmount }}</td>
 							<td style="text-align:left;">{{ sale.SaleMaster_Description }}</td>
-							<td style="text-align:center;">
+							<td class="action" style="text-align:center;">
 								<a href="" title="Sale Invoice" v-bind:href="`/sale_invoice_print/${sale.SaleMaster_SlNo}`" target="_blank"><i class="fa fa-file"></i></a>
 								<a href="" title="Chalan" v-bind:href="`/chalan/${sale.SaleMaster_SlNo}`" target="_blank"><i class="fa fa-file-o"></i></a>
-								<?php if($this->session->userdata('accountType') != 'u'){?>
-								<a href="javascript:" title="Edit Sale" @click="checkReturnAndEdit(sale)"><i class="fa fa-edit"></i></a>
-								<a href="" title="Delete Sale" @click.prevent="deleteSale(sale.SaleMaster_SlNo)"><i class="fa fa-trash"></i></a>
-								<?php }?>
+								<?php if ($this->session->userdata('accountType') != 'u') { ?>
+									<a href="javascript:" title="Edit Sale" @click="checkReturnAndEdit(sale)"><i class="fa fa-edit"></i></a>
+									<a href="" title="Delete Sale" @click.prevent="deleteSale(sale.SaleMaster_SlNo)"><i class="fa fa-trash"></i></a>
+								<?php } ?>
 							</td>
 						</tr>
 					</tbody>
@@ -262,16 +302,12 @@
 							<td style="text-align:right;">{{ parseFloat(sales.reduce((prev, curr)=>{return prev + parseFloat(curr.SaleMaster_PaidAmount)}, 0)).toFixed(2) }}</td>
 							<td style="text-align:right;">{{ parseFloat(sales.reduce((prev, curr)=>{return prev + parseFloat(curr.SaleMaster_DueAmount)}, 0)).toFixed(2) }}</td>
 							<td></td>
-							<td></td>
+							<td class="action"></td>
 						</tr>
 					</tfoot>
 				</table>
 
-				<template
-					v-if="searchTypesForDetails.includes(searchType)"  
-					style="display:none;" 
-					v-bind:style="{display: searchTypesForDetails.includes(searchType) ? '' : 'none'}"
-				>
+				<template v-if="searchTypesForDetails.includes(searchType)" style="display:none;" v-bind:style="{display: searchTypesForDetails.includes(searchType) ? '' : 'none'}">
 					<table class="record-table" v-if="selectedProduct != null">
 						<thead>
 							<tr>
@@ -332,17 +368,17 @@
 	</div>
 </div>
 
-<script src="<?php echo base_url();?>assets/js/vue/vue.min.js"></script>
-<script src="<?php echo base_url();?>assets/js/vue/axios.min.js"></script>
-<script src="<?php echo base_url();?>assets/js/vue/vue-select.min.js"></script>
-<script src="<?php echo base_url();?>assets/js/moment.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/vue/vue.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/vue/axios.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/vue/vue-select.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/moment.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/js/lodash.min.js"></script>
 
 <script>
 	Vue.component('v-select', VueSelect.VueSelect);
 	new Vue({
 		el: '#salesRecord',
-		data(){
+		data() {
 			return {
 				searchType: '',
 				recordType: 'without_details',
@@ -360,90 +396,87 @@
 				selectedCategory: null,
 				sales: [],
 				searchTypesForRecord: ['', 'user', 'customer', 'employee'],
-				searchTypesForDetails: ['quantity', 'category']
+				searchTypesForDetails: ['quantity', 'category'],
+				returnEmployees: [],
 			}
 		},
 		methods: {
-			checkReturnAndEdit(sale){
-				axios.get('/check_sale_return/' + sale.SaleMaster_InvoiceNo).then(res=>{
-					if(res.data.found){
+			checkReturnAndEdit(sale) {
+				axios.get('/check_sale_return/' + sale.SaleMaster_InvoiceNo).then(res => {
+					if (res.data.found) {
 						alert('Unable to edit. Sale return found!');
-					}else{
-						if(sale.is_service == 'true'){
-							location.replace('/sales/service/'+sale.SaleMaster_SlNo);
-						}else{
-							location.replace('/sales/product/'+sale.SaleMaster_SlNo);
+					} else {
+						if (sale.is_service == 'true') {
+							location.replace('/sales/service/' + sale.SaleMaster_SlNo);
+						} else {
+							location.replace('/sales/product/' + sale.SaleMaster_SlNo);
 						}
 					}
 				})
 			},
-			onChangeSearchType(){
+			onChangeSearchType() {
 				this.sales = [];
-				if(this.searchType == 'quantity'){
+				if (this.searchType == 'quantity') {
 					this.getProducts();
-				} 
-				else if(this.searchType == 'user'){
+				} else if (this.searchType == 'user') {
 					this.getUsers();
-				}
-				else if(this.searchType == 'category'){
+				} else if (this.searchType == 'category') {
 					this.getCategories();
-				}
-				else if(this.searchType == 'customer'){
+				} else if (this.searchType == 'customer') {
 					this.getCustomers();
-				}
-				else if(this.searchType == 'employee'){
+				} else if (this.searchType == 'employee') {
 					this.getEmployees();
 				}
 			},
-			getProducts(){
+			getProducts() {
 				axios.get('/get_products').then(res => {
 					this.products = res.data;
 				})
 			},
-			getCustomers(){
+			getCustomers() {
 				axios.get('/get_customers').then(res => {
 					this.customers = res.data;
 				})
 			},
-			getEmployees(){
+			getEmployees() {
 				axios.get('/get_employees').then(res => {
 					this.employees = res.data;
 				})
 			},
-			getUsers(){
+			getUsers() {
 				axios.get('/get_users').then(res => {
 					this.users = res.data;
 				})
 			},
-			getCategories(){
+			getCategories() {
 				axios.get('/get_categories').then(res => {
 					this.categories = res.data;
 				})
 			},
-			getSearchResult(){
-				if(this.searchType != 'customer'){
+			getSearchResult() {
+				if (this.searchType != 'customer') {
 					this.selectedCustomer = null;
 				}
 
-				if(this.searchType != 'employee'){
+				if (this.searchType != 'employee') {
 					this.selectedEmployee = null;
 				}
 
-				if(this.searchType != 'quantity'){
+				if (this.searchType != 'quantity') {
 					this.selectedProduct = null;
 				}
 
-				if(this.searchType != 'category'){
+				if (this.searchType != 'category') {
 					this.selectedCategory = null;
 				}
 
-				if(this.searchTypesForRecord.includes(this.searchType)){
+				if (this.searchTypesForRecord.includes(this.searchType)) {
 					this.getSalesRecord();
 				} else {
 					this.getSaleDetails();
 				}
 			},
-			getSalesRecord(){
+			getSalesRecord() {
 				let filter = {
 					userFullName: this.selectedUser == null || this.selectedUser.FullName == '' ? '' : this.selectedUser.FullName,
 					customerId: this.selectedCustomer == null || this.selectedCustomer.Customer_SlNo == '' ? '' : this.selectedCustomer.Customer_SlNo,
@@ -453,25 +486,23 @@
 				}
 
 				let url = '/get_sales';
-				if(this.recordType == 'with_details'){
+				if (this.recordType == 'with_details') {
 					url = '/get_sales_record';
 				}
 
 				axios.post(url, filter)
-				.then(res => {
-					if(this.recordType == 'with_details'){
-						this.sales = res.data;
-					} else {
-						this.sales = res.data.sales;
-					}
-				})
-				.catch(error => {
-					if(error.response){
-						alert(`${error.response.status}, ${error.response.statusText}`);
-					}
-				})
+					.then(res => {
+						if (this.recordType == 'with_details') {
+							this.sales = res.data.sales;
+							if (this.searchType == 'employee') {
+								this.returnEmployees = res.data.empReturn
+							}
+						} else {
+							this.sales = res.data.sales;
+						}
+					})
 			},
-			getSaleDetails(){
+			getSaleDetails() {
 				let filter = {
 					categoryId: this.selectedCategory == null || this.selectedCategory.ProductCategory_SlNo == '' ? '' : this.selectedCategory.ProductCategory_SlNo,
 					productId: this.selectedProduct == null || this.selectedProduct.Product_SlNo == '' ? '' : this.selectedProduct.Product_SlNo,
@@ -480,86 +511,83 @@
 				}
 
 				axios.post('/get_saledetails', filter)
-				.then(res => {
-					let sales = res.data;
+					.then(res => {
+						let sales = res.data;
 
-					if(this.selectedProduct == null) {
-						sales = _.chain(sales)
-							.groupBy('ProductCategory_ID')
-							.map(sale => {
-								return {
-									category_name: sale[0].ProductCategory_Name,
-									products: _.chain(sale)
-										.groupBy('Product_IDNo')
-										.map(product => {
-											return {
-												product_code: product[0].Product_Code,
-												product_name: product[0].Product_Name,
-												quantity: _.sumBy(product, item => Number(item.SaleDetails_TotalQuantity)),
-												r_quantity: _.sumBy(product, item => Number(item.returnQty)),
-												s_quantity: _.sumBy(product, item => Number(item.Quantity))
-											}
-										})
-										.value()
-								}
-							})
-							.value();
-					}
-					this.sales = sales;
-				})
-				.catch(error => {
-					if(error.response){
-						alert(`${error.response.status}, ${error.response.statusText}`);
-					}
-				})
+						if (this.selectedProduct == null) {
+							sales = _.chain(sales)
+								.groupBy('ProductCategory_ID')
+								.map(sale => {
+									return {
+										category_name: sale[0].ProductCategory_Name,
+										products: _.chain(sale)
+											.groupBy('Product_IDNo')
+											.map(product => {
+												return {
+													product_code: product[0].Product_Code,
+													product_name: product[0].Product_Name,
+													quantity: _.sumBy(product, item => Number(item.SaleDetails_TotalQuantity)),
+													r_quantity: _.sumBy(product, item => Number(item.returnQty)),
+													s_quantity: _.sumBy(product, item => Number(item.Quantity))
+												}
+											})
+											.value()
+									}
+								})
+								.value();
+						}
+						this.sales = sales;
+					})
 			},
-			deleteSale(saleId){
+			deleteSale(saleId) {
 				let deleteConf = confirm('Are you sure?');
-				if(deleteConf == false){
+				if (deleteConf == false) {
 					return;
 				}
-				axios.post('/delete_sales', {saleId: saleId})
-				.then(res => {
-					let r = res.data;
-					alert(r.message);
-					if(r.success){
-						this.getSalesRecord();
-					}
-				})
-				.catch(error => {
-					if(error.response){
-						alert(`${error.response.status}, ${error.response.statusText}`);
-					}
-				})
+				axios.post('/delete_sales', {
+						saleId: saleId
+					})
+					.then(res => {
+						let r = res.data;
+						alert(r.message);
+						if (r.success) {
+							this.getSalesRecord();
+						}
+					})
+					.catch(error => {
+						if (error.response) {
+							alert(`${error.response.status}, ${error.response.statusText}`);
+						}
+					})
 			},
-			async print(){
+			async print() {
 				let dateText = '';
-				if(this.dateFrom != '' && this.dateTo != ''){
+				if (this.dateFrom != '' && this.dateTo != '') {
 					dateText = `Statement from <strong>${this.dateFrom}</strong> to <strong>${this.dateTo}</strong>`;
 				}
 
 				let userText = '';
-				if(this.selectedUser != null && this.selectedUser.FullName != '' && this.searchType == 'user'){
+				if (this.selectedUser != null && this.selectedUser.FullName != '' && this.searchType == 'user') {
 					userText = `<strong>Sold by: </strong> ${this.selectedUser.FullName}`;
 				}
 
 				let customerText = '';
-				if(this.selectedCustomer != null && this.selectedCustomer.Customer_SlNo != '' && this.searchType == 'customer'){
+				if (this.selectedCustomer != null && this.selectedCustomer.Customer_SlNo != '' && this.searchType == 'customer') {
 					customerText = `<strong>Customer: </strong> ${this.selectedCustomer.Customer_Name}<br>`;
 				}
 
 				let employeeText = '';
-				if(this.selectedEmployee != null && this.selectedEmployee.Employee_SlNo != '' && this.searchType == 'employee'){
+				if (this.selectedEmployee != null && this.selectedEmployee.Employee_SlNo != '' && this.searchType == 'employee') {
 					employeeText = `<strong>Employee: </strong> ${this.selectedEmployee.Employee_Name}<br>`;
 				}
 
 				let productText = '';
-				if(this.selectedProduct != null && this.selectedProduct.Product_SlNo != '' && this.searchType == 'quantity'){
+				if (this.selectedProduct != null && this.selectedProduct.Product_SlNo != '' && this.searchType == 'quantity') {
 					productText = `<strong>Product: </strong> ${this.selectedProduct.Product_Name}`;
 				}
 
 				let categoryText = '';
-				if(this.selectedCategory != null && this.selectedCategory.ProductCategory_SlNo != '' && this.searchType == 'category'){
+				if (this.selectedCategory != null && this.selectedCategory.ProductCategory_SlNo != '' && this.searchType == 'category') {
 					categoryText = `<strong>Category: </strong> ${this.selectedCategory.ProductCategory_Name}`;
 				}
 
@@ -589,7 +617,7 @@
 
 				var reportWindow = window.open('', 'PRINT', `height=${screen.height}, width=${screen.width}`);
 				reportWindow.document.write(`
-					<?php $this->load->view('Administrator/reports/reportHeader.php');?>
+					<?php $this->load->view('Administrator/reports/reportHeader.php'); ?>
 				`);
 
 				reportWindow.document.head.innerHTML += `
@@ -609,11 +637,14 @@
 						.record-table th{
 							text-align: center;
 						}
+						.action{
+							display: none;
+						}
 					</style>
 				`;
 				reportWindow.document.body.innerHTML += reportContent;
 
-				if(this.searchType == '' || this.searchType == 'user'){
+				if (this.searchType == '' || this.searchType == 'user') {
 					let rows = reportWindow.document.querySelectorAll('.record-table tr');
 					rows.forEach(row => {
 						row.lastChild.remove();

@@ -405,7 +405,7 @@ if ($module == 'dashboard' or $module == '') {
 			</a>
 		</li>
 
-		<?php if (array_search("order_entry", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+		<!-- <?php if (array_search("order_entry", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>order_entry">
 					<i class="menu-icon fa fa-shopping-cart"></i>
@@ -413,7 +413,7 @@ if ($module == 'dashboard' or $module == '') {
 				</a>
 				<b class="arrow"></b>
 			</li>
-		<?php endif; ?>
+		<?php endif; ?> -->
 
 		<?php if (array_search("sales/product", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
@@ -445,7 +445,7 @@ if ($module == 'dashboard' or $module == '') {
 			</li>
 		<?php endif; ?>
 
-		<?php if (array_search("orderRecord", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+		<!-- <?php if (array_search("orderRecord", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">
 				<a href="<?php echo base_url(); ?>orderRecord">
 					<i class="menu-icon fa fa-list"></i>
@@ -453,7 +453,7 @@ if ($module == 'dashboard' or $module == '') {
 				</a>
 				<b class="arrow"></b>
 			</li>
-		<?php endif; ?>
+		<?php endif; ?> -->
 
 		<?php if (array_search("chalanRecord", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 			<li class="">

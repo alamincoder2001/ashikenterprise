@@ -71,14 +71,15 @@ class User_management extends CI_Controller {
         }
 
 		$data = array(
-			"User_Name"                 => $this->input->post('username', TRUE),
-			"FullName"                  => $this->input->post('txtFirstName', TRUE),
-			"UserEmail"                 => $this->input->post('user_email', TRUE),
-			"Brunch_ID"                 => $this->input->post('Brunch',TRUE),
-            "userBrunch_id"             => $this->input->post('Brunch',TRUE),
-			"User_Password"             => md5($this->input->post('rePassword',TRUE)),
-			"UserType"                  => $this->input->post('type',TRUE),
-			"AddTime"                   => date('Y-m-d H:i:s')
+			"User_Name"     => $this->input->post('username', TRUE),
+			"FullName"      => $this->input->post('txtFirstName', TRUE),
+			"UserEmail"     => $this->input->post('user_email', TRUE),
+			"Brunch_ID"     => $this->input->post('Brunch',TRUE),
+			"employee_id"   => $this->input->post('employee_id',TRUE),
+			"userBrunch_id" => $this->input->post('Brunch',TRUE),
+			"User_Password" => md5($this->input->post('rePassword',TRUE)),
+			"UserType"      => $this->input->post('type',TRUE),
+			"AddTime"       => date('Y-m-d H:i:s')
 		);
 		if($this->mt->save_data("tbl_user", $data)){
 			$res = ['success'=>true, 'message'=>'New user created'];
@@ -116,26 +117,27 @@ class User_management extends CI_Controller {
 		if($pass!=null)
 		{
             $data = array(
-                "User_Name"                 => $this->input->post('username', TRUE),
-                "FullName"                  => $this->input->post('txtFirstName', TRUE),
-                "UserEmail"                  => $this->input->post('user_email', TRUE),
-                "Brunch_ID"                  => $this->input->post('Brunch',TRUE),
-                "userBrunch_id"              => $this->input->post('Brunch',TRUE),
-                "User_Password"             => md5($this->input->post('rePassword',TRUE)),
-                "UserType"                  => $this->input->post('type',TRUE),
-                "AddTime"                   => date('Y-m-d H:i:s')
+                "User_Name"     => $this->input->post('username', TRUE),
+                "FullName"      => $this->input->post('txtFirstName', TRUE),
+                "UserEmail"     => $this->input->post('user_email', TRUE),
+                "Brunch_ID"     => $this->input->post('Brunch',TRUE),
+                "employee_id"   => $this->input->post('employee_id',TRUE),
+                "userBrunch_id" => $this->input->post('Brunch',TRUE),
+                "User_Password" => md5($this->input->post('rePassword',TRUE)),
+                "UserType"      => $this->input->post('type',TRUE),
+                "AddTime"       => date('Y-m-d H:i:s')
                 );
             $this->mt->update_data("tbl_user", $data, $id,$fld);
 		}else{
             $data = array(
-                "User_Name"                 => $this->input->post('username', TRUE),
-                "FullName"                  => $this->input->post('txtFirstName', TRUE),
-                "UserEmail"                  => $this->input->post('user_email', TRUE),
-                "userBrunch_id"              => $this->input->post('Brunch',TRUE),
-                "Brunch_ID"                  => $this->input->post('Brunch',TRUE),
-                //"User_Password"             => md5($this->input->post('rePassword',TRUE)),
-                "UserType"                  => $this->input->post('type',TRUE),
-                "AddTime"                   => date('Y-m-d H:i:s')
+                "User_Name"     => $this->input->post('username', TRUE),
+                "FullName"      => $this->input->post('txtFirstName', TRUE),
+                "UserEmail"     => $this->input->post('user_email', TRUE),
+                "userBrunch_id" => $this->input->post('Brunch',TRUE),
+                "Brunch_ID"     => $this->input->post('Brunch',TRUE),
+                "employee_id"   => $this->input->post('employee_id',TRUE),
+                "UserType"      => $this->input->post('type',TRUE),
+                "AddTime"       => date('Y-m-d H:i:s')
                 );
             $this->mt->update_data("tbl_user", $data, $id,$fld);
         }

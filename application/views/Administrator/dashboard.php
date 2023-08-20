@@ -393,7 +393,7 @@ if ($module == 'dashboard' or $module == '') { ?>
 					<h3>Sales Module </h3>
 				</div>
 
-				<?php if (array_search("order_entry", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+				<!-- <?php if (array_search("order_entry", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 ">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>order_entry">
@@ -406,7 +406,7 @@ if ($module == 'dashboard' or $module == '') { ?>
 							</a>
 						</div>
 					</div>
-				<?php endif; ?>
+				<?php endif; ?> -->
 
 				<?php if (array_search("sales/product", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 ">
@@ -466,7 +466,7 @@ if ($module == 'dashboard' or $module == '') { ?>
 					</div>
 				<?php endif; ?>
 
-				<?php if (array_search("orderRecord", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+				<!-- <?php if (array_search("orderRecord", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 ">
 						<div class="col-md-12 section20">
 							<a href="<?php echo base_url(); ?>orderRecord">
@@ -479,7 +479,7 @@ if ($module == 'dashboard' or $module == '') { ?>
 							</a>
 						</div>
 					</div>
-				<?php endif; ?>
+				<?php endif; ?> -->
 
 				<?php if (array_search("chalanRecord", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 col-xs-6 ">

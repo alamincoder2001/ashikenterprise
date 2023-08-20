@@ -76,7 +76,7 @@
 					<tr>
 						<td></td>
 						<td style="text-align:left;">Previous Balance</td>
-						<td colspan="5"></td>
+						<td colspan="6"></td>
 						<td style="text-align:right;">{{ parseFloat(previousBalance).toFixed(2) }}</td>
 					</tr>
 					<tr v-for="payment in payments">

@@ -108,6 +108,13 @@
 					</div>
 					<div class="col-md-1" style="padding:0;margin-left: -15px;"><a href="/area" target="_blank" class="add-button"><i class="fa fa-plus"></i></a></div>
 				</div>
+				<div class="form-group clearfix">
+					<label class="control-label col-md-4">Employee:</label>
+					<div class="col-md-7">
+						<v-select v-bind:options="employees" id="employee" v-model="selectedEmployee" label="Employee_Name"></v-select>
+					</div>
+					<div class="col-md-1" style="padding:0;margin-left: -15px;"><a href="/employee" target="_blank" class="add-button"><i class="fa fa-plus"></i></a></div>
+				</div>
 			</div>	
 
 			<div class="col-md-5">
@@ -232,6 +239,7 @@
 					Customer_OfficePhone: '',
 					Customer_Address: '',
 					owner_name: '',
+					Employee_Id: '',
 					area_ID: '',
 					Customer_Credit_Limit: 0,
 					previous_due: 0
@@ -239,6 +247,8 @@
 				customers: [],
 				districts: [],
 				selectedDistrict: null,
+				employees: [],
+				selectedEmployee: null,
 				imageUrl: '',
 				selectedFile: null,
 				
@@ -266,11 +276,17 @@
 		created(){
 			this.getDistricts();
 			this.getCustomers();
+			this.getEmployee();
 		},
 		methods: {
 			getDistricts(){
 				axios.get('/get_districts').then(res => {
 					this.districts = res.data;
+				})
+			},
+			getEmployee(){
+				axios.get('/get_employees').then(res => {
+					this.employees = res.data;
 				})
 			},
 			getCustomers(){
@@ -292,8 +308,13 @@
 					alert('Select area');
 					return;
 				}
+				if(this.selectedEmployee == null){
+					alert('Select employee');
+					return;
+				}
 
 				this.customer.area_ID = this.selectedDistrict.District_SlNo;
+				this.customer.Employee_Id = this.selectedEmployee.Employee_SlNo;
 				
 				let url = '/add_customer';
 				if(this.customer.Customer_SlNo != 0){
@@ -307,7 +328,6 @@
 				axios.post(url, fd, {
 					onUploadProgress: upe => {
 						let progress = Math.round(upe.loaded / upe.total * 100);
-						console.log(progress);
 					}
 				}).then(res=>{
 					let r = res.data;
@@ -328,6 +348,10 @@
 				this.selectedDistrict = {
 					District_SlNo: customer.area_ID,
 					District_Name: customer.District_Name
+				}
+				this.selectedEmployee = {
+					Employee_SlNo: customer.Employee_Id,
+					Employee_Name: customer.Employee_Name
 				}
 
 				if(customer.image_name == null || customer.image_name == ''){
@@ -357,10 +381,12 @@
 						this.customer[key] = '';
 					} else if(typeof(this.customer[key]) == 'number'){
 						this.customer[key] = 0;
-					}
+					} 
 				})
 				this.imageUrl = '';
 				this.selectedFile = null;
+				this.selectedEmployee = null;
+				this.selectedDistrict = null;
 			}
 		}
 	})

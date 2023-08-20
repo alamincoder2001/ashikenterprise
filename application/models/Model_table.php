@@ -554,7 +554,7 @@ class Model_Table extends CI_Model{
             select * from(
                 select
                     ci.*,
-                    (select (ci.purchase_quantity + ci.sales_return_quantity + ci.transfer_to_quantity) - (ci.sales_quantity + ci.purchase_return_quantity + ci.damage_quantity + ci.transfer_from_quantity)) as current_quantity,
+                    (select (ci.purchase_quantity + ci.sales_return_quantity + ci.transfer_to_quantity + ci.empwise_return_quantity) - (ci.sales_quantity + ci.purchase_return_quantity + ci.damage_quantity + ci.transfer_from_quantity)) as current_quantity,
                     p.Product_Name,
                     p.Product_Code,
                     p.Product_ReOrederLevel,
@@ -700,10 +700,9 @@ class Model_Table extends CI_Model{
         $stock = 0;
         if($stockCount != 0){
             $stockRow = $stockQuery->row();
-            $stock = ($stockRow->purchase_quantity + $stockRow->transfer_to_quantity + $stockRow->sales_return_quantity) 
+            $stock = ($stockRow->purchase_quantity + $stockRow->transfer_to_quantity + $stockRow->sales_return_quantity + $stockRow->empwise_return_quantity) 
                     - ($stockRow->sales_quantity + $stockRow->purchase_return_quantity + $stockRow->damage_quantity + $stockRow->transfer_from_quantity);
         }
-
         return $stock;
     }
 

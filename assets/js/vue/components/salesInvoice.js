@@ -1,9 +1,15 @@
-const salesInvoice = Vue.component('sales-invoice', {
-    template: `
+const salesInvoice = Vue.component("sales-invoice", {
+  template: `
         <div>
             <div class="row">
                 <div class="col-xs-12">
                     <a href="" v-on:click.prevent="print"><i class="fa fa-print"></i> Print</a>
+                    <label for="english" style="margin-left: 10px;">
+                        <input type="radio" id="english" value="english" v-model="language"> English
+                    </label>
+                    <label for="bangla" style="margin-left: 5px;">
+                        <input type="radio" id="bangla" value="bangla" v-model="language"> Bangla
+                    </label>
                 </div>
             </div>
             
@@ -11,27 +17,21 @@ const salesInvoice = Vue.component('sales-invoice', {
                 <div class="row">
                     <div class="col-xs-12 text-center">
                         <div _h098asdh>
-                            Sales Invoice
+                        {{ language == 'english' ? 'Sales Invoice' :  language == 'bangla' ? 'ক্যাশ মেমো' : '' }}
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-7">
-                        <strong>Customer Id:</strong> {{ sales.Customer_Code }}<br>
-                        <strong>Customer Name:</strong> {{ sales.Customer_Name }}<br>
-                        <strong>Customer Address:</strong> {{ sales.Customer_Address }}<br>
-                        <strong>Customer Mobile:</strong> {{ sales.Customer_Mobile }}
+                        <strong>{{ language == 'english' ? 'Customer Id' : language == 'bangla' ? 'গ্রাহক আইডি' : '' }}:</strong>  {{ sales.Customer_Code   }}<br>
+                        <strong>{{ language == 'english' ? 'Customer Name' : language == 'bangla' ? 'গ্রাহকের নাম' : '' }}:</strong> {{ sales.Customer_Name }}<br>
+                        <strong>{{ language == 'english' ? 'Customer Address' : language == 'bangla' ? 'গ্রাহকের ঠিকানা' : ''}}: </strong> {{ sales.Customer_Address }}<br>
+                        <strong>{{ language == 'english' ? 'Customer Mobile' : language == 'bangla' ? 'মোবাইল নাম্বার' : ''}}:</strong> {{ sales.Customer_Mobile }}
                     </div>
                     <div class="col-xs-5 text-right">
-                        <strong>Sales by:</strong> {{ sales.AddBy }}<br>
-                        <strong>Invoice No.:</strong> {{ sales.SaleMaster_InvoiceNo }}<br>
-                        <strong>Sales Date:</strong> {{ sales.SaleMaster_SaleDate }} {{ sales.AddTime | formatDateTime('h:mm a') }}<br>
-                        <strong>Payment Type:</strong> {{ sales.payment_type }}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div _d9283dsc></div>
+                        <strong>{{ language == 'english' ? 'Sales by' : language == 'bangla' ? 'বিক্রয়কারী' : ''}}:</strong> {{ sales.AddBy }}<br>
+                        <strong>{{ language == 'english' ? 'Invoice No.' : language == 'bangla' ? 'মেমো নাম্বার' : ""}}:</strong> {{ sales.SaleMaster_InvoiceNo }}<br> 
+                        <strong>{{ language == 'english' ? 'Sales Date' : language == 'bangla' ? 'তারিখ' : ''}}: </strong> {{ sales.SaleMaster_SaleDate }} {{ sales.AddTime | formatDateTime('h:mm a') }} <br> 
                     </div>
                 </div>
                 <div class="row">
@@ -39,15 +39,13 @@ const salesInvoice = Vue.component('sales-invoice', {
                         <table _a584de>
                             <thead>
                                 <tr>
-                                    <td>Sl.</td>
-                                    <td>Description</td>
-                                    <td>O. Qty</td>
-                                    <td>O. Total</td>
-                                    <td>R. Qty</td>
-                                    <td>R. Total</td>
-                                    <td>S. Qty</td>
-                                    <td>U. Price</td>
-                                    <td>Total</td>
+                                    <td>{{ language == 'english' ? 'Sl.' : language == 'bangla' ? 'ক্রমিক নং' : ''}}</td>
+                                    <td>{{ language == 'english' ? 'Description' : language == 'bangla' ? 'পন্যের বিবরণ' : ''}}</td>
+                                    <td>{{ language == 'english' ? 'O. Qty' : language == 'bangla' ? 'অর্ডার পরিমান' : ''}}</td>
+                                    <td>{{ language == 'english' ? 'O. Total' : language == 'bangla' ? 'অর্ডার মোট' : ''}}</td>
+                                    <td>{{ language == 'english' ? 'S. Qty' : language == 'bangla' ? 'এস পরিমান' : ''}}</td>
+                                    <td>{{ language == 'english' ? 'U. Price' : language == 'bangla' ? 'একক মূল্য' : ''}}</td>
+                                    <td style="text-align:right;">{{ language == 'english' ? 'Total' : language == 'bangla' ? 'মোট মূল্য' : ''}}</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -56,8 +54,6 @@ const salesInvoice = Vue.component('sales-invoice', {
                                     <td width="40%">{{ product.Product_Name }}</td>
                                     <td>{{ product.SaleDetails_TotalQuantity }}</td>
                                     <td>{{ product.SaleDetails_TotalAmount }}</td>
-                                    <td>{{ product.returnQty }}</td>
-                                    <td>{{ parseFloat( product.returnQty * product.SaleDetails_Rate).toFixed(2) }}</td>
                                     <td>{{ product.Quantity }}</td>
                                     <td>{{ product.SaleDetails_Rate }}</td>
                                     <td align="right">{{ parseFloat(product.totalAmount).toFixed(2) }}</td>
@@ -67,7 +63,7 @@ const salesInvoice = Vue.component('sales-invoice', {
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-6">
+                    <div class="col-xs-8">
                         <table _a584dee :style="{display: damage.length > 0 ? '' : 'none'}">
                             <thead>
                                 <tr>
@@ -92,12 +88,12 @@ const salesInvoice = Vue.component('sales-invoice', {
                         <br>
                         <table class="pull-left">
                             <tr>
-                                <td><strong>Previous Due:</strong></td>
+                                <td><strong>{{ language == 'english' ? 'Previous Due' : language == 'bangla' ? 'পূর্বের বকেয়া' : ''}}:</strong></td>
                                 
                                 <td style="text-align:right">{{ sales.SaleMaster_Previous_Due == null ? '0.00' : sales.SaleMaster_Previous_Due  }}</td>
                             </tr>
                             <tr>
-                                <td><strong>Current Due:</strong></td>
+                                <td><strong>{{ language == 'english' ? 'Current Due' : language == 'bangla' ? 'বর্তমান বকেয়া' : ''}}:</strong></td>
                                 
                                 <td style="text-align:right">{{ sales.SaleMaster_DueAmount == null ? '0.00' : sales.SaleMaster_DueAmount  }}</td>
                             </tr>
@@ -105,50 +101,49 @@ const salesInvoice = Vue.component('sales-invoice', {
                                 <td colspan="2" style="border-bottom: 1px solid #ccc;"></td>
                             </tr>
                             <tr>
-                                <td><strong>Total Due:</strong></td>
-                                
+                                <td><strong>{{ language == 'english' ? 'Total Due' : language == 'bangla' ? 'মোট বকেয়া' : ''}}:</strong></td>
                                 <td style="text-align:right">{{ (parseFloat(sales.SaleMaster_Previous_Due) + parseFloat(sales.SaleMaster_DueAmount == null ? 0.00 : sales.SaleMaster_DueAmount)).toFixed(2) }}</td>
                             </tr>
                         </table>
                     </div>
-                    <div class="col-xs-6">
+                    <div class="col-xs-4">
                         <table _t92sadbc2>
                             <tr>
-                                <td><strong>Sub Total:</strong></td>
+                                <td style="text-align:right;width:50%;"><strong>{{ language == 'english' ? 'Sub Total' : language == 'bangla' ? 'মোট' : 'المجموع الفرعي'}}:</strong></td>
                                 <td style="text-align:right">{{ (+sales.SaleMaster_SubTotalAmount + +sales.SaleMaster_ReturnTotal + +sales.SaleMaster_DamageTotal).toFixed(2) }}</td>
                             </tr>
                             <tr>
-                                <td><strong>Return Total(-):</strong></td>
+                                <td style="text-align:right;width:50%;"><strong>{{ language == 'english' ? 'Return Total(-)' : language == 'bangla' ? 'মোট রিটার্ন' : ''}}:</strong></td>
                                 <td style="text-align:right">{{ sales.SaleMaster_ReturnTotal }}</td>
                             </tr>
                             <tr>
-                                <td><strong>Damage Total(-):</strong></td>
+                                <td style="text-align:right;width:50%;"><strong>{{ language == 'english' ? 'Damage Total(-)' : language == 'bangla' ? 'মোট ড্যামেজ' : ''}}:</strong></td>
                                 <td style="text-align:right">{{ sales.SaleMaster_DamageTotal }}</td>
                             </tr>
                             <tr>
-                                <td><strong>VAT:</strong></td>
+                                <td style="text-align:right;width:50%;"><strong>{{ language == 'english' ? 'VAT' : language == 'bangla' ? 'ভ্যাট' : ''}}:</strong></td>
                                 <td style="text-align:right">{{ sales.SaleMaster_TaxAmount }}</td>
                             </tr>
                             <tr>
-                                <td><strong>Discount:</strong></td>
+                                <td style="text-align:right;width:50%;"><strong>{{ language == 'english' ? 'Discount' : language == 'bangla' ? 'ডিসকাউন্ট' : ''}}:</strong></td>
                                 <td style="text-align:right">{{ sales.SaleMaster_TotalDiscountAmount }}</td>
                             </tr>
                             <tr>
-                                <td><strong>Transport Cost:</strong></td>
+                                <td style="text-align:right;width:50%;"><strong>{{ language == 'english' ? 'Transport Cost' : language == 'bangla' ? 'পরিবহন খরচ' : ''}}:</strong></td>
                                 <td style="text-align:right">{{ sales.SaleMaster_Freight }}</td>
                             </tr>
                             <tr><td colspan="2" style="border-bottom: 1px solid #ccc"></td></tr>
                             <tr>
-                                <td><strong>Total:</strong></td>
+                                <td style="text-align:right;width:50%;"><strong>{{ language == 'english' ? 'Total' : language == 'bangla' ? 'সর্বমোট' : ''}}:</strong></td>
                                 <td style="text-align:right">{{ sales.SaleMaster_TotalSaleAmount }}</td>
                             </tr>
                             <tr>
-                                <td><strong>Paid:</strong></td>
+                                <td style="text-align:right;width:50%;"><strong>{{ language == 'english' ? 'Paid' : language == 'bangla' ? 'জমা' : ''}}:</strong></td>
                                 <td style="text-align:right">{{ sales.SaleMaster_PaidAmount }}</td>
                             </tr>
                             <tr><td colspan="2" style="border-bottom: 1px solid #ccc"></td></tr>
                             <tr>
-                                <td><strong>Due:</strong></td>
+                                <td style="text-align:right;width:50%;"><strong>{{ language == 'english' ? 'Due' : language == 'bangla' ? 'বকেয়া' : ''}}:</strong></td>
                                 <td style="text-align:right">{{ sales.SaleMaster_DueAmount }}</td>
                             </tr>
                         </table>
@@ -164,70 +159,70 @@ const salesInvoice = Vue.component('sales-invoice', {
             </div>
         </div>
     `,
-    props: ['sales_id'],
-    data(){
-        return {
-            sales:{
-                SaleMaster_InvoiceNo: null,
-                SalseCustomer_IDNo: null,
-                SaleMaster_SaleDate: null,
-                Customer_Name: null,
-                Customer_Address: null,
-                Customer_Mobile: null,
-                SaleMaster_TotalSaleAmount: null,
-                SaleMaster_TotalDiscountAmount: null,
-                SaleMaster_TaxAmount: null,
-                SaleMaster_Freight: null,
-                SaleMaster_SubTotalAmount: null,
-                SaleMaster_ReturnTotal: null,
-                SaleMaster_DamageTotal: null,
-                SaleMaster_PaidAmount: null,
-                SaleMaster_DueAmount: null,
-                SaleMaster_Previous_Due: null,
-                SaleMaster_Description: null,
-                AddBy: null
-            },
-            cart: [],
-            damage: [],
-            style: null,
-            companyProfile: null,
-            currentBranch: null
-        }
+  props: ["sales_id"],
+  data() {
+    return {
+      sales: {
+        SaleMaster_InvoiceNo: null,
+        SalseCustomer_IDNo: null,
+        SaleMaster_SaleDate: null,
+        Customer_Name: null,
+        Customer_Address: null,
+        Customer_Mobile: null,
+        SaleMaster_TotalSaleAmount: null,
+        SaleMaster_TotalDiscountAmount: null,
+        SaleMaster_TaxAmount: null,
+        SaleMaster_Freight: null,
+        SaleMaster_SubTotalAmount: null,
+        SaleMaster_ReturnTotal: null,
+        SaleMaster_DamageTotal: null,
+        SaleMaster_PaidAmount: null,
+        SaleMaster_DueAmount: null,
+        SaleMaster_Previous_Due: null,
+        SaleMaster_Description: null,
+        AddBy: null,
+      },
+      cart: [],
+      damage: [],
+      style: null,
+      language: "english",
+      companyProfile: null,
+      currentBranch: null,
+    };
+  },
+  filters: {
+    formatDateTime(dt, format) {
+      return dt == "" || dt == null ? "" : moment(dt).format(format);
     },
-    filters: {
-        formatDateTime(dt, format) {
-            return dt == '' || dt == null ? '' : moment(dt).format(format);
-        }
+  },
+  created() {
+    this.setStyle();
+    this.getSales();
+    this.getCurrentBranch();
+  },
+  methods: {
+    getSales() {
+      axios.post("/get_sales", { salesId: this.sales_id }).then((res) => {
+        this.sales = res.data.sales[0];
+        this.cart = res.data.saleDetails;
+        this.damage = res.data.saleDamage;
+      });
     },
-    created(){
-        this.setStyle();
-        this.getSales();
-        this.getCurrentBranch();
+    getCurrentBranch() {
+      axios.get("/get_current_branch").then((res) => {
+        this.currentBranch = res.data;
+      });
     },
-    methods:{
-        getSales(){
-            axios.post('/get_sales', {salesId: this.sales_id}).then(res=>{
-                this.sales = res.data.sales[0];
-                this.cart = res.data.saleDetails;
-                this.damage = res.data.saleDamage;
-            })
-        },
-        getCurrentBranch() {
-            axios.get('/get_current_branch').then(res => {
-                this.currentBranch = res.data;
-            })
-        },
-        setStyle(){
-            this.style = document.createElement('style');
-            this.style.innerHTML = `
+    setStyle() {
+      this.style = document.createElement("style");
+      this.style.innerHTML = `
                 div[_h098asdh]{
-                    /*background-color:#e0e0e0;*/
+                    background-color:#ffff0024;
                     font-weight: bold;
                     font-size:15px;
                     margin-bottom:15px;
-                    padding: 5px;
-                    border-top: 1px dotted #454545;
-                    border-bottom: 1px dotted #454545;
+                    border: 1px dotted #454545;
+                    -webkit-print-color-adjust: exact;
                 }
                 div[_d9283dsc]{
                     padding-bottom: 10px;
@@ -264,94 +259,279 @@ const salesInvoice = Vue.component('sales-invoice', {
                     padding: 2px;
                 }
             `;
-            document.head.appendChild(this.style);
-        },
-        convertNumberToWords(amountToWord) {
-            var words = new Array();
-            words[0] = '';
-            words[1] = 'One';
-            words[2] = 'Two';
-            words[3] = 'Three';
-            words[4] = 'Four';
-            words[5] = 'Five';
-            words[6] = 'Six';
-            words[7] = 'Seven';
-            words[8] = 'Eight';
-            words[9] = 'Nine';
-            words[10] = 'Ten';
-            words[11] = 'Eleven';
-            words[12] = 'Twelve';
-            words[13] = 'Thirteen';
-            words[14] = 'Fourteen';
-            words[15] = 'Fifteen';
-            words[16] = 'Sixteen';
-            words[17] = 'Seventeen';
-            words[18] = 'Eighteen';
-            words[19] = 'Nineteen';
-            words[20] = 'Twenty';
-            words[30] = 'Thirty';
-            words[40] = 'Forty';
-            words[50] = 'Fifty';
-            words[60] = 'Sixty';
-            words[70] = 'Seventy';
-            words[80] = 'Eighty';
-            words[90] = 'Ninety';
-            amount = amountToWord == null ? '0.00' : amountToWord.toString();
-            var atemp = amount.split(".");
-            var number = atemp[0].split(",").join("");
-            var n_length = number.length;
-            var words_string = "";
-            if (n_length <= 9) {
-                var n_array = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0);
-                var received_n_array = new Array();
-                for (var i = 0; i < n_length; i++) {
-                    received_n_array[i] = number.substr(i, 1);
-                }
-                for (var i = 9 - n_length, j = 0; i < 9; i++, j++) {
-                    n_array[i] = received_n_array[j];
-                }
-                for (var i = 0, j = 1; i < 9; i++, j++) {
-                    if (i == 0 || i == 2 || i == 4 || i == 7) {
-                        if (n_array[i] == 1) {
-                            n_array[j] = 10 + parseInt(n_array[j]);
-                            n_array[i] = 0;
-                        }
-                    }
-                }
-                value = "";
-                for (var i = 0; i < 9; i++) {
-                    if (i == 0 || i == 2 || i == 4 || i == 7) {
-                        value = n_array[i] * 10;
-                    } else {
-                        value = n_array[i];
-                    }
-                    if (value != 0) {
-                        words_string += words[value] + " ";
-                    }
-                    if ((i == 1 && value != 0) || (i == 0 && value != 0 && n_array[i + 1] == 0)) {
-                        words_string += "Crores ";
-                    }
-                    if ((i == 3 && value != 0) || (i == 2 && value != 0 && n_array[i + 1] == 0)) {
-                        words_string += "Lakhs ";
-                    }
-                    if ((i == 5 && value != 0) || (i == 4 && value != 0 && n_array[i + 1] == 0)) {
-                        words_string += "Thousand ";
-                    }
-                    if (i == 6 && value != 0 && (n_array[i + 1] != 0 && n_array[i + 2] != 0)) {
-                        words_string += "Hundred and ";
-                    } else if (i == 6 && value != 0) {
-                        words_string += "Hundred ";
-                    }
-                }
-                words_string = words_string.split("  ").join(" ");
+      document.head.appendChild(this.style);
+    },
+    convertNumberToWords(amountToWord) {
+      var words = new Array();
+      words[0] = "";
+      words[1] =
+        this.language == "english"
+          ? "One"
+          : this.language == "bangla"
+          ? "এক"
+          : "";
+      words[2] =
+        this.language == "english"
+          ? "Two"
+          : this.language == "bangla"
+          ? "দুই"
+          : "";
+      words[3] =
+        this.language == "english"
+          ? "Three"
+          : this.language == "bangla"
+          ? "তিন"
+          : "";
+      words[4] =
+        this.language == "english"
+          ? "Four"
+          : this.language == "bangla"
+          ? "চার"
+          : "";
+      words[5] =
+        this.language == "english"
+          ? "Five"
+          : this.language == "bangla"
+          ? "পাঁচ"
+          : "";
+      words[6] =
+        this.language == "english"
+          ? "Six"
+          : this.language == "bangla"
+          ? "ছয়"
+          : "";
+      words[7] =
+        this.language == "english"
+          ? "Seven"
+          : this.language == "bangla"
+          ? "সাত"
+          : "";
+      words[8] =
+        this.language == "english"
+          ? "Eight"
+          : this.language == "bangla"
+          ? "আট"
+          : "";
+      words[9] =
+        this.language == "english"
+          ? "Nine"
+          : this.language == "bangla"
+          ? "নয়"
+          : "";
+      words[10] =
+        this.language == "english"
+          ? "Ten"
+          : this.language == "bangla"
+          ? "দশ"
+          : "";
+      words[11] =
+        this.language == "english"
+          ? "Eleven"
+          : this.language == "bangla"
+          ? "এগারো"
+          : "";
+      words[12] =
+        this.language == "english"
+          ? "Twelve"
+          : this.language == "bangla"
+          ? "বারো"
+          : "";
+      words[13] =
+        this.language == "english"
+          ? "Thirteen"
+          : this.language == "bangla"
+          ? "তেরো"
+          : "";
+      words[14] =
+        this.language == "english"
+          ? "Fourteen"
+          : this.language == "bangla"
+          ? "চৌদ্দ"
+          : "";
+      words[15] =
+        this.language == "english"
+          ? "Fifteen"
+          : this.language == "bangla"
+          ? "পনেরো"
+          : "";
+      words[16] =
+        this.language == "english"
+          ? "Sixteen"
+          : this.language == "bangla"
+          ? "ষোলো"
+          : "";
+      words[17] =
+        this.language == "english"
+          ? "Seventeen"
+          : this.language == "bangla"
+          ? "সতেরো"
+          : "";
+      words[18] =
+        this.language == "english"
+          ? "Eighteen"
+          : this.language == "bangla"
+          ? "আঠারো"
+          : "";
+      words[19] =
+        this.language == "english"
+          ? "Nineteen"
+          : this.language == "bangla"
+          ? "উনিশ"
+          : "";
+      words[20] =
+        this.language == "english"
+          ? "Twenty"
+          : this.language == "bangla"
+          ? "বিশ"
+          : "";
+      words[30] =
+        this.language == "english"
+          ? "Thirty"
+          : this.language == "bangla"
+          ? "ত্রিশ"
+          : "";
+      words[40] =
+        this.language == "english"
+          ? "Forty"
+          : this.language == "bangla"
+          ? "চল্লিশ"
+          : "";
+      words[50] =
+        this.language == "english"
+          ? "Fifty"
+          : this.language == "bangla"
+          ? "পঞ্চাশ"
+          : "";
+      words[60] =
+        this.language == "english"
+          ? "Sixty"
+          : this.language == "bangla"
+          ? "ষাইট"
+          : "";
+      words[70] =
+        this.language == "english"
+          ? "Seventy"
+          : this.language == "bangla"
+          ? "সত্তর"
+          : "";
+      words[80] =
+        this.language == "english"
+          ? "Eighty"
+          : this.language == "bangla"
+          ? "আশি"
+          : "";
+      words[90] =
+        this.language == "english"
+          ? "Ninety"
+          : this.language == "bangla"
+          ? "নব্বই"
+          : "";
+      amount = amountToWord == null ? "0.00" : amountToWord.toString();
+      var atemp = amount.split(".");
+      var number = atemp[0].split(",").join("");
+      var n_length = number.length;
+      var words_string = "";
+      if (n_length <= 9) {
+        var n_array = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var received_n_array = new Array();
+        for (var i = 0; i < n_length; i++) {
+          received_n_array[i] = number.substr(i, 1);
+        }
+        for (var i = 9 - n_length, j = 0; i < 9; i++, j++) {
+          n_array[i] = received_n_array[j];
+        }
+        for (var i = 0, j = 1; i < 9; i++, j++) {
+          if (i == 0 || i == 2 || i == 4 || i == 7) {
+            if (n_array[i] == 1) {
+              n_array[j] = 10 + parseInt(n_array[j]);
+              n_array[i] = 0;
             }
-            return words_string + ' only';
-        },
-        async print(){
-            let invoiceContent = document.querySelector('#invoiceContent').innerHTML;
-            let printWindow = window.open('', 'PRINT', `width=${screen.width}, height=${screen.height}, left=0, top=0`);
-            if (this.currentBranch.print_type == '3') {
-                printWindow.document.write(`
+          }
+        }
+        value = "";
+        for (var i = 0; i < 9; i++) {
+          if (i == 0 || i == 2 || i == 4 || i == 7) {
+            value = n_array[i] * 10;
+          } else {
+            value = n_array[i];
+          }
+          if (value != 0) {
+            words_string += words[value] + " ";
+          }
+          if (
+            (i == 1 && value != 0) ||
+            (i == 0 && value != 0 && n_array[i + 1] == 0)
+          ) {
+            words_string +=
+              this.language == "english"
+                ? "Crores "
+                : this.language == "bangla"
+                ? " কোটি "
+                : "";
+          }
+          if (
+            (i == 3 && value != 0) ||
+            (i == 2 && value != 0 && n_array[i + 1] == 0)
+          ) {
+            words_string +=
+              this.language == "english"
+                ? "Lakhs "
+                : this.language == "bangla"
+                ? " লক্ষ "
+                : "";
+          }
+          if (
+            (i == 5 && value != 0) ||
+            (i == 4 && value != 0 && n_array[i + 1] == 0)
+          ) {
+            words_string +=
+              this.language == "english"
+                ? "Thousand "
+                : this.language == "bangla"
+                ? " হাজার "
+                : "";
+          }
+          if (
+            i == 6 &&
+            value != 0 &&
+            n_array[i + 1] != 0 &&
+            n_array[i + 2] != 0
+          ) {
+            words_string +=
+              this.language == "english"
+                ? "Hundred and "
+                : this.language == "bangla"
+                ? " শত এবং "
+                : "";
+          } else if (i == 6 && value != 0) {
+            words_string +=
+              this.language == "english"
+                ? "Hundred "
+                : this.language == "bangla"
+                ? " শত "
+                : "";
+          }
+        }
+        words_string = words_string.split("  ").join(" ");
+      }
+      return (
+        words_string +
+        (this.language == "english"
+          ? " only"
+          : this.language == "bangla"
+          ? " টাকা মাত্র"
+          : "")
+      );
+    },
+    async print() {
+      let invoiceContent = document.querySelector("#invoiceContent").innerHTML;
+      let printWindow = window.open(
+        "",
+        "PRINT",
+        `width=${screen.width}, height=${screen.height}, left=0, top=0`
+      );
+      if (this.currentBranch.print_type == "3") {
+        printWindow.document.write(`
                     <html>
                         <head>
                             <title>Invoice</title>
@@ -372,8 +552,8 @@ const salesInvoice = Vue.component('sales-invoice', {
                         </body>
                     </html>
                 `);
-            } else if (this.currentBranch.print_type == '2') {
-                printWindow.document.write(`
+      } else if (this.currentBranch.print_type == "2") {
+        printWindow.document.write(`
                     <!DOCTYPE html>
                     <html lang="en">
                     <head>
@@ -412,8 +592,8 @@ const salesInvoice = Vue.component('sales-invoice', {
                     </body>
                     </html>
 				`);
-            } else {
-				printWindow.document.write(`
+      } else {
+        printWindow.document.write(`
                     <!DOCTYPE html>
                     <html lang="en">
                     <head>
@@ -426,6 +606,12 @@ const salesInvoice = Vue.component('sales-invoice', {
                             body, table{
                                 font-size: 13px;
                             }
+                            @media print {
+                                div[_h098asdh] {
+                                    background-color:#ffff0024 !important;
+                                    -webkit-print-color-adjust: exact;
+                                }
+                            }
                         </style>
                     </head>
                     <body>
@@ -435,10 +621,19 @@ const salesInvoice = Vue.component('sales-invoice', {
                                     <tr>
                                         <td>
                                             <div class="row">
-                                                <div class="col-xs-2"><img src="/uploads/company_profile_thum/${this.currentBranch.Company_Logo_org}" alt="Logo" style="height:80px;" /></div>
+                                                <div class="col-xs-2"><img src="/uploads/company_profile_thum/${
+                                                  this.currentBranch
+                                                    .Company_Logo_org
+                                                }" alt="Logo" style="height:80px;" /></div>
                                                 <div class="col-xs-10" style="padding-top:20px;">
-                                                    <strong style="font-size:18px;">${this.currentBranch.Company_Name}</strong><br>
-                                                    <p style="white-space:pre-line;">${this.currentBranch.Repot_Heading}</p>
+                                                    <strong style="font-size:18px;">${
+                                                      this.currentBranch
+                                                        .Company_Name
+                                                    }</strong><br>
+                                                    <p style="white-space:pre-line;">${
+                                                      this.currentBranch
+                                                        .Repot_Heading
+                                                    }</p>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -468,19 +663,21 @@ const salesInvoice = Vue.component('sales-invoice', {
                                     </tr>
                                 </tfoot>
                             </table>
-                            <div class="row" style="border-bottom:1px solid #ccc;margin-bottom:5px;padding-bottom:6px;">
-                                <div class="col-xs-6">
-                                    <span style="text-decoration:overline;">Received by</span><br><br>
-                                    ** THANK YOU FOR YOUR BUSINESS **
-                                </div>
-                                <div class="col-xs-6 text-right">
-                                    <span style="text-decoration:overline;">Authorized by</span>
-                                </div>
-                            </div>
+                            
                             <div style="position:fixed;left:0;bottom:15px;width:100%;">
+                                <div class="row" style="border-bottom:1px solid #ccc;margin-bottom:5px;padding-bottom:6px;">
+                                    <div class="col-xs-6">
+                                        <span style="text-decoration:overline;">Received by</span>
+                                    </div>
+                                    <div class="col-xs-6 text-right">
+                                        <span style="text-decoration:overline;">Authorized by</span>
+                                    </div>
+                                </div>
                                 <div class="row" style="font-size:12px;">
                                     <div class="col-xs-6">
-                                        Print Date: ${moment().format('DD-MM-YYYY h:mm a')}, Printed by: ${this.sales.AddBy}
+                                        Print Date: ${moment().format(
+                                          "DD-MM-YYYY h:mm a"
+                                        )}, Printed by: ${this.sales.AddBy}
                                     </div>
                                     <div class="col-xs-6 text-right">
                                         Developed by: Link-Up Technologoy, Contact no: 01911978897
@@ -492,16 +689,16 @@ const salesInvoice = Vue.component('sales-invoice', {
                     </body>
                     </html>
 				`);
-            }
-            let invoiceStyle = printWindow.document.createElement('style');
-            invoiceStyle.innerHTML = this.style.innerHTML;
-            printWindow.document.head.appendChild(invoiceStyle);
-            printWindow.moveTo(0, 0);
-            
-            printWindow.focus();
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            printWindow.print();
-            printWindow.close();
-        }
-    }
-})
+      }
+      let invoiceStyle = printWindow.document.createElement("style");
+      invoiceStyle.innerHTML = this.style.innerHTML;
+      printWindow.document.head.appendChild(invoiceStyle);
+      printWindow.moveTo(0, 0);
+
+      printWindow.focus();
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      printWindow.print();
+      printWindow.close();
+    },
+  },
+});

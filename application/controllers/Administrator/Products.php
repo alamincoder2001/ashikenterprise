@@ -304,6 +304,14 @@ class Products extends CI_Controller {
                     and sr.status = 'a'
                     " . (isset($data->date) && $data->date != null ? " and sm.SaleMaster_SaleDate <= '$data->date'" : "") . "
                 ) as return_quantity,
+
+                (select ifnull(sum(emr.returnQty), 0) 
+                    from tbl_empwise_productreturn emr
+                    where emr.productId = p.Product_SlNo
+                    and emr.branchId  = '$branchId'
+                    and emr.Status = 'a'
+                    " . (isset($data->date) && $data->date != null ? " and emr.returnDate <= '$data->date'" : "") . "
+                ) as empwise_return_quantity,
                         
                 (select ifnull(sum(srd.SaleReturnDetails_ReturnQuantity), 0)
                     from tbl_salereturndetails srd 
@@ -311,7 +319,7 @@ class Products extends CI_Controller {
                     where srd.SaleReturnDetailsProduct_SlNo = p.Product_SlNo
                     and srd.SaleReturnDetails_brunchID = '$branchId'
                     " . (isset($data->date) && $data->date != null ? " and sr.SaleReturn_ReturnDate <= '$data->date'" : "") . "
-                ) as sales_returned_quantity,
+                ) as sale_return_qty,
                         
                 (select ifnull(sum(dmd.DamageDetails_DamageQuantity), 0) 
                     from tbl_damagedetails dmd
@@ -337,6 +345,8 @@ class Products extends CI_Controller {
                     and tm.transfer_to = '$branchId'
                     " . (isset($data->date) && $data->date != null ? " and tm.transfer_date <= '$data->date'" : "") . "
                 ) as transferred_to_quantity,
+
+                (select sale_return_qty + empwise_return_quantity) as sales_returned_quantity,
                         
                 (select (purchased_quantity + sales_returned_quantity + transferred_to_quantity + return_quantity) - (sold_quantity + purchase_returned_quantity + damaged_quantity + transferred_from_quantity)) as current_quantity,
                 (select p.Product_Purchase_Rate * current_quantity) as stock_value

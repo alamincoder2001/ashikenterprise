@@ -51,9 +51,12 @@ class Customer extends CI_Controller
             select
                 c.*,
                 d.District_Name,
+                e.Employee_Name,
+                e.Employee_ID,
                 concat_ws(' - ', c.Customer_Code, c.Customer_Name, c.owner_name, c.Customer_Mobile) as display_name
             from tbl_customer c
             left join tbl_district d on d.District_SlNo = c.area_ID
+            left join tbl_employee e on e.Employee_SlNo = c.Employee_Id
             where c.status = 'a'
             and c.Customer_Type != 'G'
             and (c.Customer_brunchid = ? or c.Customer_brunchid = 0)

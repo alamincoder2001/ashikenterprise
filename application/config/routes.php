@@ -296,23 +296,23 @@ $route['searchCustomerPayments'] = 'Administrator/Customer/search_customer_payme
 $route['paymentAndReport/(:any)'] = 'Administrator/Customer/paymentAndReport/$1';
 $route['customerDuePaymentPrint'] = 'Administrator/Reports/customer_due_payment';
 
-$route['user'] = 'Administrator/User_management';
-$route['get_users'] = 'Administrator/User_management/getUsers';
-$route['get_all_users'] = 'Administrator/User_management/getAllUsers';
-$route['userInsert'] = 'Administrator/User_management/user_Insert';
-$route['userUpdate'] = 'Administrator/User_management/userupdate';
-$route['userEdit/(:any)'] = 'Administrator/User_management/edit/$1';
-$route['userDeactive/(:any)'] = 'Administrator/User_management/userDeactive/$1';
-$route['userActive/(:any)'] = 'Administrator/User_management/userActive/$1';
-$route['access/(:any)'] = 'Administrator/User_management/user_access/$1';
-$route['get_user_access'] = 'Administrator/User_management/getUserAccess';
-$route['profile'] = 'Administrator/User_management/profile';
-$route['password_change'] = 'Administrator/User_management/password_change';
+$route['user']                 = 'Administrator/User_management';
+$route['get_users']            = 'Administrator/User_management/getUsers';
+$route['get_all_users']        = 'Administrator/User_management/getAllUsers';
+$route['userInsert']           = 'Administrator/User_management/user_Insert';
+$route['userUpdate']           = 'Administrator/User_management/userupdate';
+$route['userEdit/(:any)']      = 'Administrator/User_management/edit/$1';
+$route['userDeactive/(:any)']  = 'Administrator/User_management/userDeactive/$1';
+$route['userActive/(:any)']    = 'Administrator/User_management/userActive/$1';
+$route['access/(:any)']        = 'Administrator/User_management/user_access/$1';
+$route['get_user_access']      = 'Administrator/User_management/getUserAccess';
+$route['profile']              = 'Administrator/User_management/profile';
+$route['password_change']      = 'Administrator/User_management/password_change';
 $route['define_access/(:any)'] = 'Administrator/User_management/define_access/$1';
-$route['add_user_access'] = 'Administrator/User_management/addUserAccess';
-$route['upload_user_image'] = 'Administrator/User_management/uploadUserImage';
-$route['user_activity'] = 'Administrator/User_management/userActivity';
-$route['get_user_activity'] = 'Administrator/User_management/getUserActivity';
+$route['add_user_access']      = 'Administrator/User_management/addUserAccess';
+$route['upload_user_image']    = 'Administrator/User_management/uploadUserImage';
+$route['user_activity']        = 'Administrator/User_management/userActivity';
+$route['get_user_activity']    = 'Administrator/User_management/getUserActivity';
 $route['delete_user_activity'] = 'Administrator/User_management/deleteUserActivity';
 
 $route['brunch'] = 'Administrator/Page/brunch';
@@ -571,6 +571,7 @@ $route['get_order_record'] = 'Administrator/Order/getOrderRecord';
 $route['get_orderdetails'] = 'Administrator/Order/getOrderDetails';
 $route['delete_order'] = 'Administrator/Order/deleteOrder';
 $route['chalanRecord'] = 'Administrator/Order/chalanRecord';
+$route['calan_qty_return'] = 'Administrator/Order/chalanQtyReturn';
 
 // Damage record
 $route['damage_record'] = 'Administrator/Order/DamageRecord';
