@@ -54,6 +54,7 @@ class JWT
 		return $payload;
 	}
 
+
 	/**
 	 * Converts and signs a PHP object or array into a JWT string.
 	 *
@@ -188,9 +189,8 @@ class JWT
 		);
 		throw new DomainException(
 			isset($messages[$errno])
-			? $messages[$errno]
-			: 'Unknown JSON error: ' . $errno
+				? $messages[$errno]
+				: 'Unknown JSON error: ' . $errno
 		);
 	}
-
 }

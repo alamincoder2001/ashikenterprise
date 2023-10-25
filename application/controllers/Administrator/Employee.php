@@ -408,7 +408,7 @@ class Employee extends CI_Controller
         $department_id = $this->input->post('em_Depertment', true);
         $employee_name = $this->input->post('em_name', true);
         $bio_id = $this->input->post('bio_id', true);
-
+       
         if($bio_id){
             $bio_id_count = $this->db->query("SELECT * from tbl_employee where bio_id = '$bio_id' and Employee_brinchid = '$this->brunch'")->num_rows();
             if($bio_id_count != 0){
@@ -441,6 +441,7 @@ class Employee extends CI_Controller
         $config['file_name'] = $employee_code; 
         $this->upload->initialize($config);
 
+        $data['target'] = $this->input->post('target');
         $data['Designation_ID'] = $designation_id;
         $data['Department_ID'] = $department_id;
         $data['Employee_ID'] = $employee_code;
@@ -483,7 +484,30 @@ class Employee extends CI_Controller
             $data['Employee_Pic_thum'] = '';
         }
         
-        $this->mt->save_data('tbl_employee', $data);
+       $this->mt->save_data('tbl_employee', $data);
+
+       $employeeId = $this->db->insert_id(); // get last inserted id
+        
+
+      $addby = $this->session->userdata("FullName");
+
+      try {
+            // work schedule data
+            $workscheduledata = $this->input->post('workscheduledata', true);
+            $dataWork = json_decode($workscheduledata,true);
+            foreach($dataWork as $workInfo)
+            {
+                $workScheduleData = array();
+                $workScheduleData['area_id'] = $workInfo['area_id'];
+                $workScheduleData['day'] = $workInfo['day'];
+                $workScheduleData['status'] = 'a';
+                $workScheduleData['addby'] = $addby;
+                $workScheduleData['addtime'] = date("Y-m-d H:i:s");
+                $workScheduleData['branch_id'] = $this->brunch;
+                $workScheduleData['employee_id'] = $employeeId;
+                $this->mt->save_data('tbl_work_schedule', $workScheduleData);
+            }
+      } catch (\Throwable $th) {  }
 
         echo json_encode(['success' => true, 'message' => 'Save Success!']);
         exit;
@@ -546,6 +570,7 @@ class Employee extends CI_Controller
         $data['Employee_ID'] = $employee_code;
         $data['Employee_Name'] = $employee_name;
         $data['bio_id'] = $bio_id;
+        $data['target'] = $this->input->post('target');
         $data['Employee_JoinDate'] = $this->input->post('em_Joint_date');
         $data['Employee_Gender'] = $this->input->post('Gender', true);
         $data['Employee_BirthDate'] = $this->input->post('em_dob', true);
@@ -593,8 +618,83 @@ class Employee extends CI_Controller
 
         $this->mt->update_data("tbl_employee", $data, $id, $fld);
 
+        
+      $addby = $this->session->userdata("FullName");
+
+      try {
+            // work schedule data
+            $workscheduledata = $this->input->post('workscheduledata', true);
+            $dataWork = json_decode($workscheduledata,true);
+
+            foreach($dataWork as $work_schedule)
+            {
+                $schedule_day = $work_schedule['day'];
+
+                $old_work_schedule = $this->db->query(
+                    "SELECT * from tbl_work_schedule 
+                    where employee_id = '$id'
+                    and day = '$schedule_day'
+                ")->result();
+
+                if(isset($old_work_schedule) && count($old_work_schedule) > 0){
+                    echo json_encode(['success' => false, 'message' => 'Duplicate Work Schedule Day!']);
+                    exit;
+                }
+
+                $workSchedule = array();
+                $workSchedule['area_id'] = $work_schedule['area_id'];
+                $workSchedule['day'] = $work_schedule['day'];
+                $workSchedule['status'] = 'a';
+                $workSchedule['addby'] = $addby;
+                $workSchedule['addtime'] = date("Y-m-d H:i:s");
+                $workSchedule['branch_id'] = $this->brunch;
+                $workSchedule['employee_id'] = $id;
+                $this->mt->save_data('tbl_work_schedule', $workSchedule);
+            }
+            
+        } catch (\Throwable $th) { 
+            echo json_encode(['success' => true, 'message' => 'Work Schedule Update Failed!']);
+            exit;
+        }
         echo json_encode(['success' => true, 'message' => 'Update Success!']);
         exit;
+    }
+
+    // work schedule delete
+    public function scheduleDelete()
+    {
+        $id = $this->input->post('id');
+        $this->db->where('id', $id);
+        $this->db->delete('tbl_work_schedule');
+        echo json_encode(['success' => true, 'message' => 'Work Schedule Deleted!']);
+        exit;
+    }
+
+    // employee work schedule view
+    public function employeeView()
+    {
+        $id = $this->input->post('id');
+
+        $query = $this->db->query("SELECT * FROM tbl_work_schedule where employee_id = '$id'");
+        $workSchedule = $query->result();
+
+        $sheduleData = '';
+        foreach ($workSchedule as $key => $schedule) {
+            $query = $this->db->query("SELECT * FROM tbl_district where District_SlNo = '$schedule->area_id'");
+            $em_area = $query->result();
+            
+            $schedule_area = '';
+            foreach($em_area as $dataArea){
+                $schedule_area .= $dataArea->District_Name;
+            }
+           
+            $sheduleData .=  '<tr class="text-center">
+                                <td> '.++$key.' </td>
+                                <td>'.$schedule->day.'</td>
+                                <td>'.$schedule_area.'</td>
+                            </tr>';
+        }
+        print_r($sheduleData);
     }
 
     public function employee_Delete()

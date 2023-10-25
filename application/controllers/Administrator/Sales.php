@@ -114,7 +114,6 @@ class Sales extends CI_Controller
                     unset($customer['display_name']);
                     unset($customer['Customer_Type']);
                     $customer['Customer_Code']         = $this->mt->generateCustomerCode();
-                    $customer['area_ID']               = 1;
                     $customer['Employee_Id']           = $data->sales->employeeId;
                     $customer['Customer_Credit_Limit'] = 100000;
                     $customer['status']                = 'a';

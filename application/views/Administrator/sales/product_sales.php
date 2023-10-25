@@ -138,9 +138,18 @@
 								</div>
 							</div>
 							<div class="form-group">
+								<label class="col-xs-4 control-label no-padding-right"> Area </label>
+								<div class="col-xs-7">
+									<v-select v-bind:options="areas" label="District_Name" v-model="selectedArea"></v-select>
+								</div>
+								<div class="col-xs-1" style="padding: 0;">
+									<a href="<?= base_url('customer')?>" class="btn btn-xs btn-danger" style="height: 25px; border: 0; width: 27px; margin-left: -10px;" target="_blank" title="Add New Customer"><i class="fa fa-plus" aria-hidden="true" style="margin-top: 5px;"></i></a>
+								</div>
+							</div>
+							<div class="form-group">
 								<label class="col-xs-4 control-label no-padding-right"> Customer </label>
 								<div class="col-xs-7">
-									<v-select v-bind:options="customers" label="display_name" v-model="selectedCustomer" v-on:input="customerOnChange"></v-select>
+									<v-select v-bind:options="filterCustomers" label="display_name" v-model="selectedCustomer" v-on:input="customerOnChange"></v-select>
 								</div>
 								<div class="col-xs-1" style="padding: 0;">
 									<a href="<?= base_url('customer') ?>" class="btn btn-xs btn-danger" style="height: 25px; border: 0; width: 27px; margin-left: -10px;" target="_blank" title="Add New Customer"><i class="fa fa-plus" aria-hidden="true" style="margin-top: 5px;"></i></a>
@@ -593,7 +602,13 @@
 					brunch_id: "<?php echo $this->session->userdata('BRANCHid'); ?>",
 					Brunch_name: "<?php echo $this->session->userdata('Brunch_name'); ?>"
 				},
+				areas: [],
+				selectedArea: {
+					District_SlNo: null,
+					District_Name: 'select area'
+				},
 				customers: [],
+				filterCustomers: [],
 				selectedCustomer: {
 					Customer_SlNo: '',
 					Customer_Code: '',
@@ -663,17 +678,26 @@
 		},
 
 		watch: {
+		    selectedArea(area) {
+				if(this.selectedCustomer.Customer_Type != 'N') {
+
+					if(area == undefined) return;
+					let customer = this.customers.filter(item => item.area_ID == area.District_SlNo)
+					this.filterCustomers = customer;
+				}
+			},
+			
 			selectedAccount(selectedAccount) {
 				if (selectedAccount == undefined) return;
 				this.sales.account_id = selectedAccount.account_id;
 			}
-
 		},
 
 		async created() {
 			this.sales.salesDate = moment().format('YYYY-MM-DD');
 			await this.getEmployees();
 			await this.getBranches();
+			await this.getAreas();
 			await this.getCustomers();
 			this.getProducts();
 			this.getAccounts();
@@ -700,13 +724,20 @@
 					this.branches = res.data;
 				})
 			},
+			
+			getAreas() {
+				axios.get('/get_districts').then(res => {
+					this.areas = res.data;
+				})
+			},
 
 			async getCustomers() {
 				await axios.post('/get_customers', {
 					customerType: this.sales.salesType
 				}).then(res => {
 					this.customers = res.data;
-					this.customers.unshift({
+					this.filterCustomers = res.data;
+					this.filterCustomers.unshift({
 						Customer_SlNo: 'C01',
 						Customer_Code: '',
 						Customer_Name: '',
@@ -715,7 +746,7 @@
 						Customer_Address: '',
 						Customer_Type: 'N'
 					})
-					this.customers.unshift({
+					this.filterCustomers.unshift({
 						Customer_SlNo: 'C01',
 						Customer_Code: '',
 						Customer_Name: '',
@@ -1077,6 +1108,10 @@
 			},
 
 			async saveSales() {
+				if (this.selectedCustomer.Customer_Type == 'N' && this.selectedArea.District_SlNo == null) {
+					alert('Select Area');
+					return;
+				}
 				if (this.selectedCustomer.Customer_SlNo == '') {
 					alert('Select Customer');
 					return;
@@ -1118,6 +1153,10 @@
 
 				this.sales.customerId = this.selectedCustomer.Customer_SlNo;
 				this.sales.salesFrom = this.selectedBranch.brunch_id;
+
+				if(this.selectedCustomer.Customer_Type == 'N') {
+					this.selectedCustomer.area_ID = this.selectedArea.District_SlNo;
+				}
 
 				if (this.sales.paymentType == 'Cash') {
 					this.sales.account_id = null;

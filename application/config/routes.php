@@ -1,6 +1,9 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+// api route file
+require_once 'api.php';
+
 $route['default_controller'] = 'Page';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
@@ -336,7 +339,9 @@ $route['employeeInsert'] = 'Administrator/Employee/employee_insert/';
 $route['emplists/(:any)'] = 'Administrator/Employee/emplists/$1';
 $route['employeeEdit/(:any)'] = 'Administrator/Employee/employee_edit/$1';
 $route['employeeUpdate'] = 'Administrator/Employee/employee_Update';
+$route['workScheduleDelete'] = 'Administrator/Employee/scheduleDelete';
 $route['employeeDelete'] = 'Administrator/Employee/employee_Delete';
+$route['employeeView'] = 'Administrator/Employee/employeeView';
 $route['employeeActive'] = 'Administrator/Employee/active';
 // $route['salarypayment'] = 'Administrator/Employee/employeesalarypayment';
 // $route['add_employee_payment'] = 'Administrator/Employee/addEmployeePayment';

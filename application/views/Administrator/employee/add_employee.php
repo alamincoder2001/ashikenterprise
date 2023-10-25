@@ -5,249 +5,333 @@
 	$serial = explode("E",$serial);
 	$serial=$serial['1']; $autoserial= $serial+1;echo "E".$autoserial;
 	 */
-$serial ="E1000";
+$serial = "E1000";
 $query = $this->db->query("SELECT * FROM tbl_employee order by Employee_ID desc limit 1");
 $result = $query->row();
-if(@$result->Employee_ID != null){$serial = $result->Employee_ID;}
-$serial = explode("E",$serial);
-if($serial[1]>=9){ $serial=$serial['1']; $autoserial= $serial+1; $generateCode = "E".$autoserial;
-}else{
-	$serial=$serial[1]; $autoserial= $serial+1; $generateCode = "E0".$autoserial;
+if (@$result->Employee_ID != null) {
+	$serial = $result->Employee_ID;
+}
+$serial = explode("E", $serial);
+if ($serial[1] >= 9) {
+	$serial = $serial['1'];
+	$autoserial = $serial + 1;
+	$generateCode = "E" . $autoserial;
+} else {
+	$serial = $serial[1];
+	$autoserial = $serial + 1;
+	$generateCode = "E0" . $autoserial;
 }
 ?>
 <span id="Edit_emloyee_form">
 
-<div class="row">
-	<!-- PAGE CONTENT BEGINS -->
-	<div class="form-horizontal">
-		<br/>
-		<div class="col-sm-6">
-			<div class="col-sm-12 align-center"> <strong>Job Information</strong></div>
-		<hr/>
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="Product_id"> Employee ID </label>
-			<label class="col-sm-1 control-label">:</label>
-			<div class="col-sm-2">
-				<input type="text" name="Employeer_id" id="Employeer_id" value="<?php echo $generateCode; ?>" class="form-control" readonly />
-			</div>
-			
-			<label class="col-sm-2 control-label" for="bio_id"> Bio ID: </label>
-			<div class="col-sm-2">
-				<input type="text" name="bio_id" id="bio_id" value="" class="form-control" />
-			</div>
-		</div>
-
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="em_name"> Employee Name </label>
-			<label class="col-sm-1 control-label">:</label>
+	<div class="row">
+		<!-- PAGE CONTENT BEGINS -->
+		<div class="form-horizontal">
+			<br />
 			<div class="col-sm-6">
-				<input type="text" id="em_name" name="em_name" value="<?php echo set_value('em_name'); ?>" placeholder="Employee Name .." class="form-control" />
-				 <div id="em_name_" class="col-sm-12"></div>
-			</div>
-		</div>
+				<div class="col-sm-12 align-center"> <strong>Job Information</strong></div>
+				<hr />
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="Product_id"> Employee ID </label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-2">
+						<input type="text" name="Employeer_id" id="Employeer_id" value="<?php echo $generateCode; ?>" class="form-control" readonly />
+					</div>
 
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="em_Designation"> Designation </label>
-			<label class="col-sm-1 control-label">:</label>
-			<div class="col-sm-5">
-				<select class="chosen-select form-control" name="em_Designation" id="em_Designation" data-placeholder="Choose a Designation...">
-				<option value="">  </option>
-					<?php
-					$query = $this->db->query("SELECT * FROM tbl_designation where Status='a' order by Designation_Name asc");
-					$row = $query->result();
-					foreach($row as $row){ ?>
-						<option value="<?php echo $row->Designation_SlNo; ?>"><?php echo $row->Designation_Name; ?></option>
-					<?php } ?>
-					</select>
-				<div id="em_Designation_" class="col-sm-12"></div>
-			</div>
-			<div class="col-sm-1" style="padding: 0;">
-				<a href="<?= base_url('designation')?>" title="Add New Designation" class="btn btn-xs btn-danger" style="height: 25px; border: 0; width: 27px; margin-left: -10px;" target="_blank" ><i class="fa fa-plus" aria-hidden="true" style="margin-top: 5px;"></i></a>
-			</div>
-		</div>
+					<label class="col-sm-2 control-label" for="bio_id"> Bio ID: </label>
+					<div class="col-sm-2">
+						<input type="text" name="bio_id" id="bio_id" value="" class="form-control" />
+					</div>
+				</div>
 
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="em_Depertment"> Department </label>
-			<label class="col-sm-1 control-label">:</label>
-			<div class="col-sm-5">
-				<select class="chosen-select form-control" name="em_Depertment" id="em_Depertment" data-placeholder="Choose a Depertment...">
-				<option value="">  </option>
-					<?php
-					$dquery = $this->db->query("SELECT * FROM tbl_department order by Department_Name asc ");
-					$drow = $dquery->result();
-					foreach($drow as $drow){ ?>
-						<option value="<?php echo $drow->Department_SlNo; ?>"><?php echo $drow->Department_Name; ?></option>
-					<?php } ?>
-					</select>
-				<div id="em_Depertment_" class="col-sm-12"></div>
-			</div>
-			<div class="col-sm-1" style="padding: 0;">
-				<a href="<?= base_url('depertment')?>" title="Add New Department" class="btn btn-xs btn-danger" style="height: 25px; border: 0; width: 27px; margin-left: -10px;" target="_blank" ><i class="fa fa-plus" aria-hidden="true" style="margin-top: 5px;"></i></a>
-			</div>
-		</div>
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="em_name"> Employee Name </label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<input type="text" id="em_name" name="em_name" value="<?php echo set_value('em_name'); ?>" placeholder="Employee Name .." class="form-control" />
+						<div id="em_name_" class="col-sm-12"></div>
+					</div>
+				</div>
 
-			<div class="form-group">
-			<label class="col-sm-4 control-label" for="em_Joint_date">Joint Date</label>
-			<label class="col-sm-1 control-label">:</label>
-				<div class="col-sm-6">
-				<input class="form-control date-picker" name="em_Joint_date" id="em_Joint_date" type="text" data-date-format="yyyy-mm-dd" style="border-radius: 5px !important;" value="<?php echo date("Y-m-d") ?>" />
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="em_Designation"> Designation </label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-5">
+						<select class="chosen-select form-control" name="em_Designation" id="em_Designation" data-placeholder="Choose a Designation...">
+							<option value=""> </option>
+							<?php
+							$query = $this->db->query("SELECT * FROM tbl_designation where Status='a' order by Designation_Name asc");
+							$row = $query->result();
+							foreach ($row as $row) { ?>
+								<option value="<?php echo $row->Designation_SlNo; ?>"><?php echo $row->Designation_Name; ?></option>
+							<?php } ?>
+						</select>
+						<div id="em_Designation_" class="col-sm-12"></div>
+					</div>
+					<div class="col-sm-1" style="padding: 0;">
+						<a href="<?= base_url('designation') ?>" title="Add New Designation" class="btn btn-xs btn-danger" style="height: 25px; border: 0; width: 27px; margin-left: -10px;" target="_blank"><i class="fa fa-plus" aria-hidden="true" style="margin-top: 5px;"></i></a>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="em_Depertment"> Department </label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-5">
+						<select class="chosen-select form-control" name="em_Depertment" id="em_Depertment" data-placeholder="Choose a Depertment...">
+							<option value=""> </option>
+							<?php
+							$dquery = $this->db->query("SELECT * FROM tbl_department order by Department_Name asc ");
+							$drow = $dquery->result();
+							foreach ($drow as $drow) { ?>
+								<option value="<?php echo $drow->Department_SlNo; ?>"><?php echo $drow->Department_Name; ?></option>
+							<?php } ?>
+						</select>
+						<div id="em_Depertment_" class="col-sm-12"></div>
+					</div>
+					<div class="col-sm-1" style="padding: 0;">
+						<a href="<?= base_url('depertment') ?>" title="Add New Department" class="btn btn-xs btn-danger" style="height: 25px; border: 0; width: 27px; margin-left: -10px;" target="_blank"><i class="fa fa-plus" aria-hidden="true" style="margin-top: 5px;"></i></a>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="em_Joint_date">Joint Date</label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<input class="form-control date-picker" name="em_Joint_date" id="em_Joint_date" type="text" data-date-format="yyyy-mm-dd" style="border-radius: 5px !important;" value="<?php echo date("Y-m-d") ?>" />
+					</div>
+				</div>
+
+
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="salary_range">Salary Range</label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<input type="text" id="salary_range" name="salary_range" value="<?php echo set_value('phone_number'); ?>" placeholder="Salary Range .." class="form-control" />
+						<div id="salary_range_" class="col-sm-12"></div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="form-field-1"> Activation Status</label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<select class="chosen-select form-control" name="status" id="status" data-placeholder="Choose a status...">
+							<option value=""> </option>
+							<option value="a"> Active </option>
+							<option value="p"> Deactive </option>
+						</select>
+					</div>
 				</div>
 			</div>
 
 
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="salary_range">Salary Range</label>
-			<label class="col-sm-1 control-label">:</label>
 			<div class="col-sm-6">
-				<input type="text" id="salary_range" name="salary_range" value="<?php echo set_value('phone_number'); ?>" placeholder="Salary Range .." class="form-control" />
-				 <div id="salary_range_" class="col-sm-12"></div>
+				<div class="col-sm-12 align-center"> <strong>Contact Information</strong></div>
+
+				<hr />
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="em_Present_address"> Present Address </label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<input type="text" id="em_Present_address" name="em_Present_address" placeholder="Present Address" class="form-control" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="em_Permanent_address"> Permanent Address </label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<input type="text" id="em_Permanent_address" name="em_Permanent_address" placeholder="Present Address" class="form-control" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="em_contact"> Contact No </label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<input type="text" id="em_contact" name="em_contact" placeholder="Contact No" class="form-control" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="ec_email"> E-mail </label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<input type="text" id="ec_email" name="ec_email" placeholder="E-mail" class="form-control" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="em_photo"> Employee Image </label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<input type="file" id="em_photo" name="em_photo" class="form-control" onchange="readURL(this)" style="height:35px" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="em_photo"> Reference </label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<textarea id="em_reference" name="em_reference" placeholder="Reference" class="form-control"></textarea>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for=""> </label>
+					<label class="col-sm-1 control-label"></label>
+
+				</div>
 			</div>
 		</div>
 
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="form-field-1"> Activation Status</label>
-			<label class="col-sm-1 control-label">:</label>
-			<div class="col-sm-6">
-				<select class="chosen-select form-control" name="status" id="status" data-placeholder="Choose a status...">
-					<option value="">  </option>
-					<option value="a"> Active </option>
-					<option value="p"> Deactive </option>
-				</select>
-			</div>
-		</div>
-		</div>
-
-
-		<div class="col-sm-6">
-		<div class="col-sm-12 align-center"> <strong>Contact Information</strong></div>
-
-		<hr/>
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="em_Present_address"> Present Address </label>
-			<label class="col-sm-1 control-label">:</label>
-			<div class="col-sm-6">
-				<input type="text" id="em_Present_address" name="em_Present_address" placeholder="Present Address" class="form-control" />
-			</div>
-		</div>
-
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="em_Permanent_address"> Permanent  Address </label>
-			<label class="col-sm-1 control-label">:</label>
-			<div class="col-sm-6">
-				<input type="text" id="em_Permanent_address" name="em_Permanent_address" placeholder="Present Address" class="form-control" />
-			</div>
-		</div>
-
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="em_contact"> Contact No </label>
-			<label class="col-sm-1 control-label">:</label>
-			<div class="col-sm-6">
-				<input type="text" id="em_contact" name="em_contact"  placeholder="Contact No" class="form-control" />
-			</div>
-		</div>
-
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="ec_email"> E-mail </label>
-			<label class="col-sm-1 control-label">:</label>
-			<div class="col-sm-6">
-				<input type="text" id="ec_email" name="ec_email" placeholder="E-mail" class="form-control" />
-			</div>
-		</div>
-
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="em_photo"> Employee Image </label>
-			<label class="col-sm-1 control-label">:</label>
-			<div class="col-sm-6">
-				<input type="file" id="em_photo" name="em_photo" class="form-control" onchange="readURL(this)" style="height:35px" />
-			</div>
-		</div>
-
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="em_photo"> Reference </label>
-			<label class="col-sm-1 control-label">:</label>
-			<div class="col-sm-6">
-				<textarea id="em_reference" name="em_reference" placeholder="Reference" class="form-control"></textarea>
-			</div>
-		</div>
-
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for=""> </label>
-			<label class="col-sm-1 control-label"></label>
-			<div class="col-sm-6">
-				<button type="button" onclick="Employee_submit()" name="btnSubmit" title="Save" class="btn btn-sm btn-success pull-left">
-						Save
-						<i class="ace-icon fa fa-arrow-right icon-on-right bigger-110"></i>
-				</button>
-			</div>
-		</div>
 	</div>
-</div>
 
-</div>
+	<div class="row">
+		<div class="form-horizontal">
+			<br />
+			<div class="col-sm-6">
+				<div class="col-sm-12 align-center"> <strong>Personal Information</strong></div>
+				<hr />
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="form-field-1"> Father's Name </label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<input type="text" id="em_father" name="em_father" placeholder="Father's Name" class="form-control" />
+					</div>
+				</div>
 
-<div class="row">
-	<div class="form-horizontal">
-			<br/>
-		<div class="col-sm-6">
-		<div class="col-sm-12 align-center"> <strong>Personal Information</strong></div>
-		<hr/>
-			<div class="form-group">
-				<label class="col-sm-4 control-label" for="form-field-1"> Father's Name </label>
-				<label class="col-sm-1 control-label">:</label>
-				<div class="col-sm-6">
-					<input type="text" id="em_father" name="em_father" placeholder="Father's Name" class="form-control" />
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="form-field-1"> Mother's Name </label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<input type="text" id="mother_name" name="mother_name" placeholder="Mother's Name" class="form-control" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="form-field-1"> Gender </label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<select class="chosen-select form-control" name="Gender" id="Gender" data-placeholder="Choose a Gender...">
+							<option value=""> </option>
+							<option value="Male">Male</option>
+							<option value="Female">Female</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="em_dob">Date of Birth</label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<input class="form-control date-picker" name="em_dob" id="em_dob" type="text" data-date-format="yyyy-mm-dd" style="border-radius: 5px !important;" value="<?php echo date("Y-m-d") ?>" />
+					</div>
+				</div>
+
+
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="Marital"> Marital Status </label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<select class="chosen-select form-control" name="Marital" id="Marital" data-placeholder="Choose a Marital Status...">
+							<option value=""> </option>
+							<option value="married">Married</option>
+							<option value="unmarried">Unmarried</option>
+						</select>
+					</div>
+				</div>
+
+			</div>
+
+			<!-- work information -->
+			<div class="col-sm-6 workInformation">
+				<div class="col-sm-12 align-center"> <strong>Work Information</strong></div>
+				<hr />
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="form-field-1"> Target </label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<input type="number" id="em_target" name="target" placeholder="Target" class="form-control" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="form-field-1"> Day </label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<!-- echo date('l'); -->
+						<select class="chosen-select form-control daySelect" name="day" id="day" data-placeholder="Choose a day...">
+							<option value=""> </option>
+							<option value="Saturday">Saturday</option>
+							<option value="Sunday">Sunday</option>
+							<option value="Monday">Monday</option>
+							<option value="Tuesday">Tuesday</option>
+							<option value="Wednesday">Wednesday</option>
+							<option value="Thursday">Thursday</option>
+							<option value="Friday">Friday</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-4 control-label" for="form-field-1"> Area </label>
+					<label class="col-sm-1 control-label">:</label>
+					<div class="col-sm-6">
+						<select class="chosen-select form-control areaSelect" name="area_id" id="area_id" data-placeholder="Choose a area...">
+							<option value="0"> </option>
+							<?php
+							$dquery = $this->db->query("SELECT * FROM tbl_district order by District_Name asc ");
+							$drow = $dquery->result();
+							foreach ($drow as $drow) { ?>
+								<option value="<?php echo $drow->District_SlNo; ?>" data-value="<?php echo $drow->District_Name; ?>">
+									<?php echo $drow->District_Name; ?>
+								</option>
+							<?php } ?>
+						</select>
+					</div>
+					<button type="button" class="btn btn-sm btn-success addToCard" style="float: right; height: 25px; width: 83px; margin-right: 59px; padding: 0;">
+						Add to cart
+					</button>
+				</div>
+
+				<div class="form-group">
+					<div class="col-sm-3"></div>
+					<div class="col-sm-8 table-responsive" style="margin-top: 10px;">
+						<table class="table table-bordered">
+							<tr class="text-center">
+								<th>Sl</th>
+								<th>Day</th>
+								<th>Area</th>
+								<th>Action</th>
+							</tr>
+							<tbody id="workInfo">
+
+							</tbody>
+						</table>
+					</div>
+					<div class="col-sm-1"></div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-sm-3"></div>
+					<div class="col-sm-8">
+						<button type="button" onclick="Employee_submit()" name="btnSubmit" title="Save" class="btn btn-sm btn-success pull-left" style="float: right !important;">
+							Save
+							<i class="ace-icon fa fa-arrow-right icon-on-right bigger-110"></i>
+						</button>
+					</div>
+					<div class="col-sm-1"></div>
 				</div>
 			</div>
 
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="form-field-1"> Mother's Name </label>
-			<label class="col-sm-1 control-label">:</label>
 			<div class="col-sm-6">
-				<input type="text" id="mother_name" name="mother_name" placeholder="Mother's Name" class="form-control" />
-			</div>
-		</div>
-
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="form-field-1"> Gender </label>
-			<label class="col-sm-1 control-label">:</label>
-			<div class="col-sm-6">
-				<select class="chosen-select form-control" name="Gender" id="Gender" data-placeholder="Choose a Gender...">
-					<option value="">  </option>
-					<option value="Male">Male</option>
-                    <option value="Female">Female</option>
-				</select>
-			</div>
-		</div>
-
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="em_dob">Date of Birth</label>
-			<label class="col-sm-1 control-label">:</label>
-				<div class="col-sm-6">
-				<input class="form-control date-picker" name="em_dob" id="em_dob" type="text" data-date-format="yyyy-mm-dd" style="border-radius: 5px !important;" value="<?php echo date("Y-m-d") ?>" />
-				</div>
-			</div>
-
-		<div class="form-group">
-			<label class="col-sm-4 control-label" for="Marital"> Marital Status </label>
-			<label class="col-sm-1 control-label">:</label>
-			<div class="col-sm-6">
-				<select class="chosen-select form-control" name="Marital" id="Marital" data-placeholder="Choose a Marital Status...">
-					<option value="">  </option>
-					<option value="married">Married</option>
-                    <option value="unmarried">Unmarried</option>
-				</select>
-			</div>
-		</div>
-
-		</div>
-
-		<div class="col-sm-6">
 				<span></span>
-				<img id="hideid" src="<?php echo base_url();?>assets/images/No-Image-.jpg" alt="" style="width:200px">
+				<img id="hideid" src="<?php echo base_url(); ?>assets/images/No-Image-.jpg" alt="" style="width:200px">
 				<img id="preview" src="#" style="width:80px;height:80px" hidden>
+			</div>
 		</div>
 	</div>
-</div>
 </span>
 
 
@@ -255,8 +339,8 @@ if($serial[1]>=9){ $serial=$serial['1']; $autoserial= $serial+1; $generateCode =
 	function readURL(input) {
 		if (input.files && input.files[0]) {
 			var reader = new FileReader();
-			reader.onload = function (e) {
-				document.getElementById('preview').src=e.target.result;
+			reader.onload = function(e) {
+				document.getElementById('preview').src = e.target.result;
 			}
 			reader.readAsDataURL(input.files[0]);
 			$("#hideid").hide();
@@ -264,47 +348,51 @@ if($serial[1]>=9){ $serial=$serial['1']; $autoserial= $serial+1; $generateCode =
 		}
 	}
 </script>
+
 <script type="text/javascript">
-	function Employee_submit(){
+	
+	var detailArr = [];
+
+	function Employee_submit() {
 		var Employeer_id = $("#Employeer_id").val();
 		var em_name = $("#em_name").val();
-		if(em_name==""){
-			$("#em_name").css('border-color','red');
+		if (em_name == "") {
+			$("#em_name").css('border-color', 'red');
 			return false;
 		}
 		var em_Designation = $("#em_Designation").val();
-		if(em_Designation==""){
-			$("#em_Designation").css('border-color','red');
+		if (em_Designation == "") {
+			$("#em_Designation").css('border-color', 'red');
 			return false;
 		}
 		var em_Depertment = $("#em_Depertment").val();
-		if(em_Depertment==""){
-			$("#em_Depertment").css('border-color','red');
+		if (em_Depertment == "") {
+			$("#em_Depertment").css('border-color', 'red');
 			return false;
 		}
 		var em_Joint_date = $("#em_Joint_date").val();
-		if(em_Joint_date==""){
-			$("#em_Joint_date").css('border-color','red');
+		if (em_Joint_date == "") {
+			$("#em_Joint_date").css('border-color', 'red');
 			return false;
 		}
 		var Gender = $("#Gender").val();
-		if(Gender==""){
-			$("#Gender").css('border-color','red');
+		if (Gender == "") {
+			$("#Gender").css('border-color', 'red');
 			return false;
 		}
 		var em_dob = $("#em_dob").val();
-		if(em_dob==""){
-			$("#em_dob").css('border-color','red');
+		if (em_dob == "") {
+			$("#em_dob").css('border-color', 'red');
 			return false;
 		}
 		var Marital = $("#Marital").val();
-		if(Marital==""){
-			$("#Marital").css('border-color','red');
+		if (Marital == "") {
+			$("#Marital").css('border-color', 'red');
 			return false;
 		}
 		var em_contact = $("#em_contact").val();
-		if(em_contact==""){
-			$("#em_contact").css('border-color','red');
+		if (em_contact == "") {
+			$("#em_contact").css('border-color', 'red');
 			return false;
 		}
 		var em_Present_address = $("#em_Present_address").val();
@@ -315,13 +403,13 @@ if($serial[1]>=9){ $serial=$serial['1']; $autoserial= $serial+1; $generateCode =
 
 		var em_Permanent_address = $("#em_Permanent_address").val();
 
-
-
 		var ec_email = $("#ec_email").val();
 		var salary_range = $("#salary_range").val();
 		var status = $("#status").val();
 
 		var fd = new FormData();
+		fd.append("workscheduledata", JSON.stringify(detailArr));
+		fd.append('target', $('#em_target').val());
 		fd.append('em_photo', $('#em_photo')[0].files[0]);
 		fd.append('Employeer_id', $('#Employeer_id').val());
 		fd.append('em_name', $('#em_name').val());
@@ -344,19 +432,67 @@ if($serial[1]>=9){ $serial=$serial['1']; $autoserial= $serial+1; $generateCode =
 		fd.append('status', $('#status').val());
 
 		var x = $.ajax({
-			url: "<?php echo base_url();?>employeeInsert",
+			url: "<?php echo base_url(); ?>employeeInsert",
 			type: "POST",
 			data: fd,
+			dataType: 'JSON',
 			enctype: 'multipart/form-data',
 			processData: false,
 			contentType: false,
-			success:function(res){
-				let resp = $.parseJSON(res);
-				alert(resp.message);
-				if(resp.success){
+			success: function(res) {
+				// let resp = $.parseJSON(res);
+				alert(res.message);
+				if (res.success) {
 					location.reload();
 				}
 			}
 		});
+	}
+
+
+
+	function listArr() {
+		$("#workInfo").html("");
+
+		$.each(detailArr, (index, value) => {
+			let workInfo = `<tr class="text-center preDetails_${index + 1}">
+							<td>${index + 1}</td>
+							<td>${value.day}</td>
+							<td>${value.area}</td>
+							<td>
+								<a onclick="workInfoRemove(${index})" class="text-danger">
+									<i class="fa fa-trash"></i>
+								</a>
+							</td>
+							<input type="hidden" class="day" name="day[]" value='${value.day}'>
+							<input type="hidden" class="area_id" name="area_id[]" value='${value.area_id}'>
+						</tr>`;
+			$("#workInfo").append(workInfo);
+		})
+	}
+
+	// work information
+	$(".workInformation .addToCard").on('click', function() {
+		let day = $(".workInformation select[name=day] option:selected").val();
+		let area = $(".workInformation select[name=area_id] option:selected").attr('data-value');
+		let area_id = $(".workInformation select[name=area_id] option:selected").val();
+
+		let detail = {
+			'day': day,
+			'area': area,
+			'area_id': area_id
+		};
+
+		detailArr.push(detail);
+		listArr();
+		// make null these field
+		$('.daySelect').val('').trigger('chosen:updated');
+		$('.areaSelect').val('').trigger('chosen:updated');
+	})
+
+	// remove work info
+	function workInfoRemove(id) {
+		detailArr.splice(id, 1);
+		listArr();
 	}
 </script>

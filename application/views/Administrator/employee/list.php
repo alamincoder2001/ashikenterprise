@@ -59,8 +59,14 @@
 										<a class="blue" href="<?php echo base_url(); ?>employeeEdit/<?php echo $row->Employee_SlNo; ?>" style="cursor:pointer;">
 											<i class="ace-icon fa fa-pencil bigger-130"></i> <?php //echo $row->Status; ?>
 										</a>
+
+										<a class="blue" onclick="employeeView(<?php echo $row->Employee_SlNo; ?>)" href="javascript:void(0)" style="cursor:pointer;">
+											<i class="fa fa-eye bigger-130"></i>
+										</a>
 										
-										<span onclick="deleted(<?php echo $row->Employee_SlNo; ?>)" style="cursor:pointer;color:red;font-size:20px;margin-right:20px;"><i class="fa fa-trash-o"></i></span>
+										<span onclick="deleted(<?php echo $row->Employee_SlNo; ?>)" style="cursor:pointer;color:red;font-size:20px;margin-right:20px;">
+											<i class="fa fa-trash-o"></i>
+										</span>
 										<?php }?>
 										
 									</div>
@@ -76,7 +82,65 @@
 	</div><!-- /.col -->
 </div><!-- /.row -->
 
+
+<!-- end modal -->
+
+<div class="modal fade" id="workSchedule" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Employee Work Schedule</h4>
+        </div>
+        <div class="modal-body">
+
+			<div class="form-group">
+				
+				<div class="table-responsive">
+					<table class="table table-bordered">
+						<tr class="text-center">
+							<th>Sl</th>
+							<th>Day</th>
+							<th>Area</th>
+						</tr>
+						<tbody class="sheduleData">
+
+						</tbody>
+					</table>
+				</div>
+				
+			</div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+
+<!-- modal -->
+
 <script type="text/javascript">
+
+	function employeeView(id)
+	{
+		$.ajax({
+            type: "POST",
+            url: '<?php echo base_url();?>employeeView',
+            data: {id:id},
+            success:function(res){
+				$("#workSchedule .sheduleData").html(res);
+				$("#workSchedule").modal('show');
+            }
+        });
+	} 
+
+
     function deleted(id){
         var deletedd= id;
         var inputdata = 'deleted='+deletedd;
