@@ -143,7 +143,7 @@
 									<v-select v-bind:options="areas" label="District_Name" v-model="selectedArea"></v-select>
 								</div>
 								<div class="col-xs-1" style="padding: 0;">
-									<a href="<?= base_url('customer')?>" class="btn btn-xs btn-danger" style="height: 25px; border: 0; width: 27px; margin-left: -10px;" target="_blank" title="Add New Customer"><i class="fa fa-plus" aria-hidden="true" style="margin-top: 5px;"></i></a>
+									<a href="<?= base_url('customer') ?>" class="btn btn-xs btn-danger" style="height: 25px; border: 0; width: 27px; margin-left: -10px;" target="_blank" title="Add New Customer"><i class="fa fa-plus" aria-hidden="true" style="margin-top: 5px;"></i></a>
 								</div>
 							</div>
 							<div class="form-group">
@@ -222,6 +222,17 @@
 									</div>
 								</div>
 
+								<div class="form-group">
+									<label class="col-xs-3 control-label no-padding-right"> Discount</label>
+									<div class="col-xs-5" style="display: flex;">
+										<input type="number" step="0.01" min="0" id="discount" placeholder="Discount" class="form-control" ref="discount" v-model="selectedProduct.discount" v-on:input="productTotal" autocomplete="off" style="width: 80%;" />
+										<button type="button" style="width: 20%;padding: 2px 2px;height: 25px;border:0;">%</button>
+									</div>
+									<div class="col-xs-4 no-padding-left">
+										<input type="text" id="discountAmount" v-model="selectedProduct.discountAmount" v-on:input="productTotal" placeholder="Amount" class="form-control" :readonly="selectedProduct.quantity == undefined || selectedProduct.quantity == 0 ? true : false"/>
+									</div>
+								</div>
+
 								<div class="form-group" style="display:none;">
 									<label class="col-xs-3 control-label no-padding-right"> Discount</label>
 									<div class="col-xs-9">
@@ -234,6 +245,12 @@
 									<div class="col-xs-9">
 										<input type="text" id="productTotal" placeholder="Amount" class="form-control" v-model="selectedProduct.total" readonly />
 									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-xs-3" style="text-align: end;padding-right:0;">
+										<input type="checkbox" id="is_free" v-model="selectedProduct.is_free" true-value="true" false-value="false" style="width:15px;height:15px;" @change="freeProductChange" />
+									</div>
+									<label class="col-xs-9 control-label no-padding-right" for="is_free"> Free Product </label>
 								</div>
 
 								<div class="form-group">
@@ -265,7 +282,7 @@
 			<div class="table-responsive">
 				<table class="table table-bordered" style="color:#000;margin-bottom: 5px;">
 					<thead>
-						<tr class="">
+						<tr>
 							<th style="width:5%;color:#000;">Sl</th>
 							<th style="width:15%;color:#000;">Product Code</th>
 							<th style="width:20%;color:#000;">Product Name</th>
@@ -273,12 +290,13 @@
 							<th style="width:8%;color:#000;">Pcs</th>
 							<th style="width:9%;color:#000;">T.Qty</th>
 							<th style="width:10%;color:#000;">Rate</th>
-							<th style="width:15%;color:#000;">Total Amount</th>
+							<th style="width:7%;color:#000;">Discount(%)</th>
+							<th style="width:15%;color:#000;">Total</th>
 							<th style="width:10%;color:#000;">Action</th>
 						</tr>
 					</thead>
 					<tbody style="display:none;" v-bind:style="{display: cart.length > 0 ? '' : 'none'}">
-						<tr v-for="(product, sl) in cart">
+						<tr v-for="(product, sl) in cart"  :style="{background: product.is_free == 'true'?'#ffd17e':''}" :title="product.is_free == 'false'?'':'Free Product'">
 							<td>{{ sl + 1 }}</td>
 							<td>{{ product.productCode }}</td>
 							<td>{{ product.name }}</td>
@@ -286,21 +304,22 @@
 							<td>{{ product.pcs ?? 0 }}</td>
 							<td><input style="width: 60px; height:20px; text-align:center;" type="number" v-model="product.quantity" :readonly="sales.salesId != 0" v-on:input="calculateProductQty(sl)"></td>
 							<td>{{ product.salesRate }}</td>
+							<td>{{ product.discount }}</td>
 							<td>{{ product.total }}</td>
 							<td><a href="" v-on:click.prevent="removeFromCart(sl)"><i class="fa fa-trash"></i></a></td>
 						</tr>
 
 						<tr>
-							<td colspan="9"></td>
+							<td colspan="10"></td>
 						</tr>
 
 						<tr style="font-weight: bold;">
-							<td colspan="6">Note</td>
+							<td colspan="7">Note</td>
 							<td colspan="3">Total</td>
 						</tr>
 
 						<tr>
-							<td colspan="6"><textarea style="width: 100%;font-size:13px;" placeholder="Note" v-model="sales.note"></textarea></td>
+							<td colspan="7"><textarea style="width: 100%;font-size:13px;" placeholder="Note" v-model="sales.note"></textarea></td>
 							<td colspan="3" style="padding-top: 15px;font-size:18px;">{{ sales.total }}</td>
 						</tr>
 					</tbody>
@@ -633,7 +652,8 @@
 					Product_Purchase_Rate: '',
 					Product_SellingPrice: 0.00,
 					vat: 0.00,
-					total: 0.00
+					total: 0.00,
+					is_free: 'false'
 				},
 				returnProducts: [],
 				damageProducts: [],
@@ -678,15 +698,15 @@
 		},
 
 		watch: {
-		    selectedArea(area) {
-				if(this.selectedCustomer.Customer_Type != 'N') {
+			selectedArea(area) {
+				if (this.selectedCustomer.Customer_Type != 'N') {
 
-					if(area == undefined) return;
+					if (area == undefined) return;
 					let customer = this.customers.filter(item => item.area_ID == area.District_SlNo)
 					this.filterCustomers = customer;
 				}
 			},
-			
+
 			selectedAccount(selectedAccount) {
 				if (selectedAccount == undefined) return;
 				this.sales.account_id = selectedAccount.account_id;
@@ -724,7 +744,7 @@
 					this.branches = res.data;
 				})
 			},
-			
+
 			getAreas() {
 				axios.get('/get_districts').then(res => {
 					this.areas = res.data;
@@ -798,7 +818,15 @@
 				let pcsQty = this.selectedProduct.pcs ? this.selectedProduct.pcs : 0;
 				this.selectedProduct.quantity = parseFloat(boxQty) + parseFloat(pcsQty);
 
-				this.selectedProduct.total = (parseFloat(this.selectedProduct.quantity) * parseFloat(this.selectedProduct.Product_SellingPrice)).toFixed(2);
+				if (event.target.id == 'discount') {
+					this.selectedProduct.discountAmount = parseFloat((parseFloat(this.selectedProduct.Product_SellingPrice) * parseFloat(this.selectedProduct.discount)) / 100).toFixed(2);
+				}
+				if (event.target.id == 'discountAmount') {
+					this.selectedProduct.discount = parseFloat((parseFloat(this.selectedProduct.discountAmount)*100) / parseFloat(this.selectedProduct.Product_SellingPrice)).toFixed(2);
+				}
+				let total = parseFloat(this.selectedProduct.quantity) * parseFloat(this.selectedProduct.Product_SellingPrice);
+				let discountTotal = this.selectedProduct.discountAmount == undefined ? 0 : parseFloat(this.selectedProduct.discountAmount) * this.selectedProduct.quantity;
+				this.selectedProduct.total = parseFloat(total - discountTotal).toFixed(2);
 			},
 
 			productReturnTotal() {
@@ -840,7 +868,8 @@
 					}
 				}
 
-				this.cart[ind].total = this.cart[ind].quantity * this.cart[ind].salesRate;
+				var new_rate = this.cart[ind].salesRate - this.cart[ind].discountAmount;
+				this.cart[ind].total = (this.cart[ind].quantity * new_rate).toFixed(2);
 				this.calculateTotal()
 			},
 
@@ -901,6 +930,22 @@
 
 				this.$refs.quantity.focus();
 			},
+			freeProductChange(){
+				if (event.target.checked) {
+					if (this.selectedProduct != null || this.selectedProduct.Product_SlNo != '') {
+						localStorage.setItem('sale_rate', this.selectedProduct.Product_SellingPrice)
+					}
+					this.selectedProduct.Product_SellingPrice = 0.00;
+					this.selectedProduct.total = 0.00;
+					this.selectedProduct.discount = 0;
+					this.selectedProduct.discountAmount = 0;
+				}else{
+					this.selectedProduct.boxQty = 0;
+					this.selectedProduct.pcs = 0;
+					this.selectedProduct.quantity = 0;
+					this.selectedProduct.Product_SellingPrice = localStorage.getItem('sale_rate');
+				}
+			},
 			toggleProductPurchaseRate() {
 				//this.productPurchaseRate = this.productPurchaseRate == '' ? this.selectedProduct.Product_Purchase_Rate : '';
 				this.$refs.productPurchaseRate.type = this.$refs.productPurchaseRate.type == 'text' ? 'password' : 'text';
@@ -913,10 +958,13 @@
 					name: this.selectedProduct.Product_Name,
 					salesRate: this.selectedProduct.Product_SellingPrice,
 					vat: this.selectedProduct.vat,
+					discount: this.selectedProduct.discount,
+					discountAmount: this.selectedProduct.discountAmount,
 					quantity: this.selectedProduct.quantity,
 					boxQty: this.selectedProduct.boxQty,
 					pcs: this.selectedProduct.pcs,
 					total: this.selectedProduct.total,
+					is_free: this.selectedProduct.is_free,
 					purchaseRate: this.selectedProduct.Product_Purchase_Rate
 				}
 
@@ -930,10 +978,10 @@
 					return;
 				}
 
-				if (product.salesRate == 0 || product.salesRate == '') {
-					alert('Enter sales rate');
-					return;
-				}
+				// if (product.salesRate == 0 || product.salesRate == '') {
+				// 	alert('Enter sales rate');
+				// 	return;
+				// }
 
 				if (product.quantity > this.productStock && this.sales.isService == 'false') {
 					alert('Stock unavailable');
@@ -942,7 +990,9 @@
 
 				let cartInd = this.cart.findIndex(p => p.productId == product.productId);
 				if (cartInd > -1) {
-					this.cart.splice(cartInd, 1);
+					if (product.is_free == 'false') {
+						this.cart.splice(cartInd, 1);
+					}
 				}
 
 				this.cart.unshift(product);
@@ -1154,7 +1204,7 @@
 				this.sales.customerId = this.selectedCustomer.Customer_SlNo;
 				this.sales.salesFrom = this.selectedBranch.brunch_id;
 
-				if(this.selectedCustomer.Customer_Type == 'N') {
+				if (this.selectedCustomer.Customer_Type == 'N') {
 					this.selectedCustomer.area_ID = this.selectedArea.District_SlNo;
 				}
 
@@ -1182,6 +1232,9 @@
 						} else {
 							window.location = this.sales.isService == 'false' ? '/sales/product' : '/sales/service';
 						}
+						// window.open('/sale_invoice_print_auto/' + r.salesId, '_blank');
+						// await new Promise(r => setTimeout(r, 1000));
+						// window.location = this.sales.isService == 'false' ? '/sales/product' : '/sales/service';
 					} else {
 						alert(r.message);
 						this.saleOnProgress = false;
@@ -1249,9 +1302,12 @@
 							name: product.Product_Name,
 							salesRate: product.SaleDetails_Rate,
 							vat: product.SaleDetails_Tax,
+							discount: product.SaleDetails_Discount,
+							discountAmount: product.Discount_amount,
 							quantity: product.SaleDetails_TotalQuantity,
 							total: product.SaleDetails_TotalAmount,
 							purchaseRate: product.Purchase_Rate,
+							is_free: product.is_free
 						}
 
 						this.cart.push(cartProduct);

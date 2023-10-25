@@ -244,6 +244,7 @@ $route['sale_return_details'] = 'Administrator/Sales/saleReturnDetails';
 $route['check_sale_return/(:any)'] = 'Administrator/Sales/checkSaleReturn/$1';
 
 $route['sale_invoice_print/(:any)'] = 'Administrator/Sales/saleInvoicePrint/$1';
+$route['sale_invoice_print_auto/(:any)'] = 'Administrator/Sales/saleInvoicePrintAuto/$1';
 $route['craditlimit'] = 'Administrator/Sales/craditlimit/';
 $route['salesrecord'] = 'Administrator/Sales/sales_record';   
 $route['search_sales_record'] = 'Administrator/Reports/search_sales_record';

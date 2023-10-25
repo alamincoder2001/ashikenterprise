@@ -206,6 +206,7 @@ class Products extends CI_Controller {
         $products = $this->db->query("
             select
                 p.*,
+                'false' as is_free,
                 concat('/uploads/products/', p.image) as imageUrl,
                 concat(p.Product_Name, ' - ', p.Product_Code) as display_text,
                 pc.ProductCategory_Name,

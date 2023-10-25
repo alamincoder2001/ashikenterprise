@@ -50,14 +50,23 @@ class AuthController extends CI_Controller
 				'message' => 'User not found'
 			]);
 		} else {
+			$sdata['userId'] = $result->User_SlNo;
+			$sdata['BRANCHid'] = $result->Brunch_ID;
+			$sdata['FullName'] = $result->FullName;
+			$sdata['User_Name'] = $result->User_Name;
+			$sdata['accountType'] = $result->UserType;
+			$sdata['userBrunch'] = $result->Brunch_sales;
+			$sdata['Brunch_name'] = $result->Brunch_name;
+			$this->session->set_userdata($sdata);
+
 			$user     = array(
-				'id'         => $result->User_SlNo,
-				'name'       => $result->FullName,
-				'usertype'   => $result->UserType,
-				'employeeId' => $result->employee_id,
-				'image_name' => $result->image_name,
-				'branch'     => $result->Brunch_ID,
-				'branch_name'     => $result->Brunch_name,
+				'id'          => $result->User_SlNo,
+				'name'        => $result->FullName,
+				'usertype'    => $result->UserType,
+				'employeeId'  => $result->employee_id,
+				'image_name'  => $result->image_name,
+				'branch'      => $result->Brunch_ID,
+				'branch_name' => $result->Brunch_name,
 			);
 
 			$token = $jwt->encode($user, $JwtSecretKey, 'HS256');
