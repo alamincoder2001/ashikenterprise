@@ -45,6 +45,7 @@ const salesInvoice = Vue.component("sales-invoice", {
                                     <td>{{ language == 'english' ? 'O. Total' : language == 'bangla' ? 'অর্ডার মোট' : ''}}</td>
                                     <td>{{ language == 'english' ? 'S. Qty' : language == 'bangla' ? 'এস পরিমান' : ''}}</td>
                                     <td>{{ language == 'english' ? 'U. Price' : language == 'bangla' ? 'একক মূল্য' : ''}}</td>
+                                    <td>{{ language == 'english' ? 'Discount' : language == 'bangla' ? 'ছাড়' : ''}}</td>
                                     <td style="text-align:right;">{{ language == 'english' ? 'Total' : language == 'bangla' ? 'মোট মূল্য' : ''}}</td>
                                 </tr>
                             </thead>
@@ -53,12 +54,13 @@ const salesInvoice = Vue.component("sales-invoice", {
                                     <td>{{ sl + 1 }}</td>
                                     <td style="position:relative;width:40%;">
                                       {{ product.Product_Name }}
-                                      <span v-if="product.is_free == 'true'" style="position: absolute; top: 0;left: 0;background: #ebd00f;color: #1a1d26;font-style: italic;padding: 0 5px;border-top-left-radius: 15px; border-bottom-right-radius: 15px;font-weight: 800;font-family: cursive;height: 100%;display: flex;align-items: center;">free</span>
+                                      <span v-if="product.is_free == 'true'" style="position: absolute;width: 30px;top: 4px;left: -3px;background: rgb(235, 208, 15);color: rgb(26, 29, 38);font-size: 9px;border-radius: 15px;transform: rotate3d(0, 0, 1, 323deg);font-weight: bolder;">free</span>
                                     </td>
                                     <td>{{ product.SaleDetails_TotalQuantity }}</td>
                                     <td>{{ product.SaleDetails_TotalAmount }}</td>
                                     <td>{{ product.Quantity }}</td>
                                     <td>{{ product.SaleDetails_Rate }}</td>
+                                    <td>{{ product.Discount_amount }}</td>
                                     <td align="right">{{ parseFloat(product.totalAmount).toFixed(2) }}</td>
                                 </tr>
                             </tbody>

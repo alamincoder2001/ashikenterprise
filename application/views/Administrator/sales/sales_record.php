@@ -150,6 +150,7 @@
 							<th>Saved By</th>
 							<th>Product Name</th>
 							<th>Price</th>
+							<th>Discount</th>
 							<th>O. Qty</th>
 							<th>O. Total</th>
 							<th>S. Qty</th>
@@ -167,10 +168,11 @@
 								<td>{{ sale.AddBy }}</td>
 								<td>{{ sale.saleDetails[0].Product_Name }}</td>
 								<td style="text-align:right;">{{ sale.saleDetails[0].SaleDetails_Rate }}</td>
+								<td style="text-align:right;">{{ sale.saleDetails[0].Discount_amount }}</td>
 								<td style="text-align:center;">{{ sale.saleDetails[0].SaleDetails_TotalQuantity }}</td>
 								<td style="text-align:right;">{{ sale.saleDetails[0].SaleDetails_TotalAmount }}</td>
 								<td style="text-align:center;">{{ sale.saleDetails[0].Quantity }}</td>
-								<td style="text-align:right;">{{ sale.saleDetails[0].totalAmount }}</td>
+								<td style="text-align:right;">{{ (sale.saleDetails[0].totalAmount-sale.saleDetails[0].Discount_amount).toFixed(2) }}</td>
 								<td style="text-align:center;">
 									<a href="" title="Sale Invoice" v-bind:href="`/sale_invoice_print/${sale.SaleMaster_SlNo}`" target="_blank"><i class="fa fa-file"></i></a>
 									<a href="" title="Chalan" v-bind:href="`/chalan/${sale.SaleMaster_SlNo}`" target="_blank"><i class="fa fa-file-o"></i></a>
@@ -184,6 +186,7 @@
 								<td colspan="5" v-bind:rowspan="sale.saleDetails.length - 1" v-if="sl == 0"></td>
 								<td>{{ product.Product_Name }}</td>
 								<td style="text-align:right;">{{ product.SaleDetails_Rate }}</td>
+								<td style="text-align:right;">{{ product.Discount_amount }}</td>
 								<td style="text-align:center;">{{ product.SaleDetails_TotalQuantity }}</td>
 								<td style="text-align:right;">{{ product.SaleDetails_TotalAmount }}</td>
 								<td style="text-align:center;">{{ product.Quantity }}</td>
@@ -191,9 +194,8 @@
 								<td></td>
 							</tr>
 							<tr style="font-weight:bold;">
-								<td colspan="6" style="font-weight:normal;"><strong>Note: </strong>{{ sale.SaleMaster_Description }}</td>
+								<td colspan="8" style="font-weight:normal;"><strong>Note: </strong>{{ sale.SaleMaster_Description }}</td>
 								<td style="text-align:center;">Total <br>{{ sale.saleDetails.reduce((prev, curr) => {return prev + parseFloat(curr.SaleDetails_TotalQuantity)}, 0) }}</td>
-								<td></td>
 								<td style="text-align:center;">Total <br>{{ sale.saleDetails.reduce((prev, curr) => {return prev + parseFloat(curr.returnQty)}, 0) }}</td>
 								<td style="text-align:center;">Total <br>{{ sale.saleDetails.reduce((prev, curr) => {return prev + parseFloat(curr.Quantity)}, 0) }}</td>
 								<td style="text-align:right;">
@@ -493,7 +495,7 @@
 				axios.post(url, filter)
 					.then(res => {
 						if (this.recordType == 'with_details') {
-							this.sales = res.data.sales;
+							this.sales = res.data.sales.filter(sale => sale.saleDetails.length > 0);
 							if (this.searchType == 'employee') {
 								this.returnEmployees = res.data.empReturn
 							}

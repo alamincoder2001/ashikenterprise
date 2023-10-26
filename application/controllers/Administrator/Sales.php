@@ -383,7 +383,7 @@ class Sales extends CI_Controller
                         and sr.product_id = sd.Product_IDNo
                     )as returnQty,
                     (select(sd.SaleDetails_TotalQuantity - returnQty)) as Quantity,
-                    (select(sd.SaleDetails_Rate * Quantity)) as totalAmount
+                    (select(sd.SaleDetails_Rate * Quantity) - ifnull(sd.Discount_amount, 0)) as totalAmount
                 from tbl_saledetails sd
                 join tbl_product p on p.Product_SlNo = sd.Product_IDNo
                 join tbl_unit u on u.Unit_SlNo = p.Unit_ID
@@ -448,7 +448,7 @@ class Sales extends CI_Controller
                         and sr.product_id = sd.Product_IDNo
                     )as returnQty,
                     (select(sd.SaleDetails_TotalQuantity - returnQty)) as Quantity,
-                    (select(sd.SaleDetails_Rate * Quantity)) as totalAmount
+                    (select(sd.SaleDetails_Rate * Quantity)-ifnull(sd.Discount_amount, 0)) as totalAmount
                 from tbl_saledetails sd
                 join tbl_product p on p.Product_SlNo = sd.Product_IDNo
                 join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
