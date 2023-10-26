@@ -3,323 +3,327 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class SalesController extends CI_Controller
 {
-	// public $userdata;
-	public $branch = '';
-	public $userFullName = '';
-	public function __construct()
-	{
-		parent::__construct();
+    // public $userdata;
+    public $branch = '';
+    public $userFullName = '';
+    public function __construct()
+    {
+        parent::__construct();
 
-		// error_reporting(0);
-		$this->load->model('ApiModel');
-		$this->load->helper('verifyauthtoken');
+        // error_reporting(0);
+        $this->load->model('ApiModel');
+        $this->load->helper('verifyauthtoken');
 
-		$this->load->model('Billing_model');
-		$this->load->library('cart');
-		$this->load->model('Model_table', "mt", TRUE);
-		$this->load->helper('form');
-		$this->load->model('SMS_model', 'sms', true);
+        $this->load->model('Billing_model');
+        $this->load->library('cart');
+        $this->load->model('Model_table', "mt", TRUE);
+        $this->load->helper('form');
+        $this->load->model('SMS_model', 'sms', true);
 
-		$headerToken = $this->input->get_request_header('Authorization');
-		$splitToken = explode(" ", $headerToken);
-		$token =  $splitToken[1];
+        $headerToken = $this->input->get_request_header('Authorization');
+        $splitToken = explode(" ", $headerToken);
+        $token =  $splitToken[1];
 
-		try {
-			$token = verifyAuthToken($token);
-			$array = get_object_vars($token);
-			$this->branch = $array['branch'];
-			$this->userFullName = $array['name'];
-		} catch (Exception $e) {
-			echo json_encode([
-				"status" => 401,
-				"message" => "Invalid Token provided",
-				"success" => false
-			]);
-			exit;
-		}
+        try {
+            $token = verifyAuthToken($token);
+            $array = get_object_vars($token);
+            $this->branch = $array['branch'];
+            $this->userFullName = $array['name'];
+        } catch (Exception $e) {
+            echo json_encode([
+                "status" => 401,
+                "message" => "Invalid Token provided",
+                "success" => false
+            ]);
+            exit;
+        }
 
-		header("Access-Control-Allow-Origin: *");
-		header("Access-Control-Allow-Methods: GET, OPTIONS, POST, GET, PUT");
-		header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
-	}
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, OPTIONS, POST, GET, PUT");
+        header("Access-Control-Allow-Headers: Content-Type, Content-Length, Accept-Encoding");
+    }
 
-	public function addSales()
-	{
-		$res = ['success' => false, 'message' => ''];
-		try {
-			$data = json_decode($this->input->raw_input_stream);
+    public function addSales()
+    {
+        $res = ['success' => false, 'message' => ''];
+        try {
+            $data = json_decode($this->input->raw_input_stream);
 
-			$invoice = $data->sales->invoiceNo;
-			$invoiceCount = $this->db->query("select * from tbl_salesmaster where SaleMaster_InvoiceNo = ?", $invoice)->num_rows();
-			if ($invoiceCount != 0) {
-				$invoice = $this->mt->generateSalesInvoice();
-			}
-			$customerId = $data->sales->customerId;
-			if (isset($data->customer)) {
-				$customer = (array)$data->customer;
-				unset($customer['Customer_SlNo']);
-				unset($customer['display_name']);
-				$customer['Customer_Code'] = $this->mt->generateCustomerCode();
-				$customer['status'] = 'a';
-				$customer['AddBy'] = $this->userFullName;
-				$customer['AddTime'] = date("Y-m-d H:i:s");
-				$customer['Customer_brunchid'] = $this->branch;
+            $invoice = $data->sales->invoiceNo;
+            $invoiceCount = $this->db->query("select * from tbl_salesmaster where SaleMaster_InvoiceNo = ?", $invoice)->num_rows();
+            if ($invoiceCount != 0) {
+                $invoice = $this->mt->generateSalesInvoice();
+            }
+            $customerId = $data->sales->customerId;
+            if (isset($data->customer)) {
+                $customer = (array)$data->customer;
+                unset($customer['Customer_SlNo']);
+                unset($customer['display_name']);
+                $customer['Customer_Code'] = $this->mt->generateCustomerCode();
+                $customer['status'] = 'a';
+                $customer['AddBy'] = $this->userFullName;
+                $customer['AddTime'] = date("Y-m-d H:i:s");
+                $customer['Customer_brunchid'] = $this->branch;
 
-				$this->db->insert('tbl_customer', $customer);
-				$customerId = $this->db->insert_id();
-			}
-			$sales = array(
-				'SaleMaster_InvoiceNo' => $invoice,
-				'SalseCustomer_IDNo' => $customerId,
-				'employee_id' => $data->sales->employeeId,
-				'SaleMaster_SaleDate' => $data->sales->salesDate,
-				'SaleMaster_SaleType' => $data->sales->salesType,
-				'SaleMaster_TotalSaleAmount' => $data->sales->total,
-				'SaleMaster_TotalDiscountAmount' => $data->sales->discount,
-				'SaleMaster_TaxAmount' => $data->sales->vat,
-				'SaleMaster_Freight' => $data->sales->transportCost,
-				'SaleMaster_SubTotalAmount' => $data->sales->subTotal,
-				'SaleMaster_PaidAmount' => $data->sales->paid,
-				'SaleMaster_DueAmount' => $data->sales->due,
-				'SaleMaster_Previous_Due' => $data->sales->previousDue,
-				'SaleMaster_Description' => $data->sales->note,
-				'Status' => 'a',
-				'is_service' => $data->sales->isService,
-				"AddBy" => $this->userFullName,
-				'AddTime' => date("Y-m-d H:i:s"),
-				'SaleMaster_branchid' => $this->branch
-			);
+                $this->db->insert('tbl_customer', $customer);
+                $customerId = $this->db->insert_id();
+            }
+            $sales = array(
+                'SaleMaster_InvoiceNo' => $invoice,
+                'SalseCustomer_IDNo' => $customerId,
+                'employee_id' => $data->sales->employeeId,
+                'SaleMaster_SaleDate' => $data->sales->salesDate,
+                'SaleMaster_SaleType' => $data->sales->salesType,
+                'SaleMaster_TotalSaleAmount' => $data->sales->total,
+                'SaleMaster_TotalDiscountAmount' => $data->sales->discount,
+                'SaleMaster_TaxAmount' => $data->sales->vat,
+                'SaleMaster_Freight' => $data->sales->transportCost,
+                'SaleMaster_SubTotalAmount' => $data->sales->subTotal,
+                'SaleMaster_PaidAmount' => $data->sales->paid,
+                'SaleMaster_DueAmount' => $data->sales->due,
+                'SaleMaster_Previous_Due' => $data->sales->previousDue,
+                'SaleMaster_Description' => $data->sales->note,
+                'Status' => 'a',
+                'is_service' => $data->sales->isService,
+                "AddBy" => $this->userFullName,
+                'AddTime' => date("Y-m-d H:i:s"),
+                'SaleMaster_branchid' => $this->branch
+            );
 
-			$this->db->insert('tbl_salesmaster', $sales);
+            $this->db->insert('tbl_salesmaster', $sales);
 
-			$salesId = $this->db->insert_id();
+            $salesId = $this->db->insert_id();
 
-			foreach ($data->cart as $cartProduct) {
-				$saleDetails = array(
-					'SaleMaster_IDNo' => $salesId,
-					'Product_IDNo' => $cartProduct->productId,
-					'SaleDetails_TotalQuantity' => $cartProduct->quantity,
-					'Purchase_Rate' => $cartProduct->purchaseRate,
-					'SaleDetails_Rate' => $cartProduct->salesRate,
-					'SaleDetails_Tax' => $cartProduct->vat,
-					'SaleDetails_TotalAmount' => $cartProduct->total,
-					'Status' => 'a',
-					'AddBy' => $this->userFullName,
-					'AddTime' => date('Y-m-d H:i:s'),
-					'SaleDetails_BranchId' => $cartProduct->branchId,
-					'cat_id' => $cartProduct->categoryId
-				);
+            foreach ($data->cart as $cartProduct) {
+                $saleDetails = array(
+                    'SaleMaster_IDNo'           => $salesId,
+                    'Product_IDNo'              => $cartProduct->productId,
+                    'SaleDetails_TotalQuantity' => $cartProduct->quantity,
+                    'Purchase_Rate'             => $cartProduct->purchaseRate,
+                    'SaleDetails_Tax'           => $cartProduct->vat,
+                    'SaleDetails_Rate'          => $cartProduct->is_free != 'true' ? $cartProduct->salesRate:0,
+                    'SaleDetails_Discount'      => isset($cartProduct->discount) ? $cartProduct->discount : 0,
+                    'Discount_amount'           => isset($cartProduct->discountAmount) ? $cartProduct->discountAmount : 0,
+                    'is_free'                   => $cartProduct->is_free,
+                    'SaleDetails_TotalAmount'   => $cartProduct->is_free != 'true' ? $cartProduct->total:0,
+                    'Status'                    => 'a',
+                    'AddBy'                     => $this->userFullName,
+                    'AddTime'                   => date('Y-m-d H:i:s'),
+                    'SaleDetails_BranchId'      => $cartProduct->branchId,
+                    'cat_id'                    => $cartProduct->categoryId
+                );
 
-				$this->db->insert('tbl_saledetails', $saleDetails);
+                $this->db->insert('tbl_saledetails', $saleDetails);
 
-				//update stock
-				$this->db->query("
+                //update stock
+                $this->db->query("
                     update tbl_currentinventory 
                     set sales_quantity = sales_quantity + ? 
                     where product_id = ?
                     and branch_id = ?
                     and cat_id=? 
                 ", [$cartProduct->quantity, $cartProduct->productId, $cartProduct->branchId, $cartProduct->categoryId]);
-			}
-			$currentDue = $data->sales->previousDue + ($data->sales->total - $data->sales->paid);
-			//Send sms
-			if ($data->sales->send_sms == true) {
+            }
+            $currentDue = $data->sales->previousDue + ($data->sales->total - $data->sales->paid);
+            //Send sms
+            if ($data->sales->send_sms == true) {
 
-				$customerInfo = $this->db->query("select * from tbl_customer where Customer_SlNo = ?", $customerId)->row();
-				$sendToName = $customerInfo->owner_name != '' ? $customerInfo->owner_name : $customerInfo->Customer_Name;
+                $customerInfo = $this->db->query("select * from tbl_customer where Customer_SlNo = ?", $customerId)->row();
+                $sendToName = $customerInfo->owner_name != '' ? $customerInfo->owner_name : $customerInfo->Customer_Name;
 
-				// $message = "Dear {$sendToName},\nYour bill is tk. {$data->sales->total}. Received tk. {$data->sales->paid} and current due is tk. {$currentDue} for invoice {$invoice}";
-				$message = "মি: {$sendToName},\nআপনার  ইনভয়েস নং:{$invoice}\nবিল: tk.{$data->sales->total}.\nরিসিভ: tk.{$data->sales->paid}\nবাকী: tk.{$data->sales->due}\nমোট বাকী: tk.{$currentDue}.";
-				$recipient = $customerInfo->Customer_Mobile;
-				$this->sms->sendSms($recipient, $message);
-			}
+                // $message = "Dear {$sendToName},\nYour bill is tk. {$data->sales->total}. Received tk. {$data->sales->paid} and current due is tk. {$currentDue} for invoice {$invoice}";
+                $message = "মি: {$sendToName},\nআপনার  ইনভয়েস নং:{$invoice}\nবিল: tk.{$data->sales->total}.\nরিসিভ: tk.{$data->sales->paid}\nবাকী: tk.{$data->sales->due}\nমোট বাকী: tk.{$currentDue}.";
+                $recipient = $customerInfo->Customer_Mobile;
+                $this->sms->sendSms($recipient, $message);
+            }
 
-			$res = ['success' => true, 'message' => 'Sales Success', 'salesId' => $salesId];
-		} catch (Exception $ex) {
-			$res = ['success' => false, 'message' => $ex->getMessage()];
-		}
+            $res = ['success' => true, 'message' => 'Sales Success', 'salesId' => $salesId];
+        } catch (Exception $ex) {
+            $res = ['success' => false, 'message' => $ex->getMessage()];
+        }
 
-		echo json_encode($res);
-	}
+        echo json_encode($res);
+    }
 
-    public function addOrder() 
+    public function addOrder()
     {
         $res = ['success' => false, 'message' => ''];
-        
+
         try {
             $data = json_decode($this->input->raw_input_stream);
 
             $customer = $this->db->query("select * from tbl_customer where Customer_SlNo = ?", $data->order->customerId)->row();
 
             $order = array(
-				'SaleMaster_InvoiceNo' => $this->mt->generateSalesInvoice(),
-				'SalseCustomer_IDNo' => $customer->Customer_SlNo,
-				'employee_id' => $data->order->employeeId,
-				'SaleMaster_SaleDate' => date("Y-m-d H:i:s"),
-				'SaleMaster_SaleType' => $customer->Customer_Type,
-				'SaleMaster_TotalSaleAmount' => $data->order->subTotal,
-				'SaleMaster_TotalDiscountAmount' => 0,
-				'SaleMaster_TaxAmount' => 0,
-				'SaleMaster_Freight' => 0,
-				'SaleMaster_SubTotalAmount' => $data->order->subTotal,
-				'SaleMaster_PaidAmount' => 0,
-				'SaleMaster_DueAmount' => $data->order->subTotal,
-				'SaleMaster_Previous_Due' => $data->order->prevDue,
-				'SaleMaster_Description' => 'Apps Order',
-				'Status' => 'a',
-				'is_service' => 'false',
-				"AddBy" => $this->userFullName,
-				'AddTime' => date("Y-m-d H:i:s"),
-				'SaleMaster_branchid' => $this->branch
-			);
+                'SaleMaster_InvoiceNo' => $this->mt->generateSalesInvoice(),
+                'SalseCustomer_IDNo' => $customer->Customer_SlNo,
+                'employee_id' => $data->order->employeeId,
+                'SaleMaster_SaleDate' => date("Y-m-d H:i:s"),
+                'SaleMaster_SaleType' => $customer->Customer_Type,
+                'SaleMaster_TotalSaleAmount' => $data->order->subTotal,
+                'SaleMaster_TotalDiscountAmount' => 0,
+                'SaleMaster_TaxAmount' => 0,
+                'SaleMaster_Freight' => 0,
+                'SaleMaster_SubTotalAmount' => $data->order->subTotal,
+                'SaleMaster_PaidAmount' => 0,
+                'SaleMaster_DueAmount' => $data->order->subTotal,
+                'SaleMaster_Previous_Due' => $data->order->prevDue,
+                'SaleMaster_Description' => 'Apps Order',
+                'Status' => 'a',
+                'is_service' => 'false',
+                "AddBy" => $this->userFullName,
+                'AddTime' => date("Y-m-d H:i:s"),
+                'SaleMaster_branchid' => $this->branch
+            );
 
-			$this->db->insert('tbl_salesmaster', $order);
+            $this->db->insert('tbl_salesmaster', $order);
 
-			$orderId = $this->db->insert_id();
+            $orderId = $this->db->insert_id();
 
-			foreach ($data->cart as $cartProduct) {
-				$orderDetails = array(
-					'SaleMaster_IDNo' => $orderId,
-					'Product_IDNo' => $cartProduct->productId,
-					'SaleDetails_TotalQuantity' => $cartProduct->quantity,
-					'Purchase_Rate' => $cartProduct->purchaseRate,
-					'SaleDetails_Rate' => $cartProduct->salesRate,
-				// 	'SaleDetails_Discount' => $cartProduct->discount,
-					'SaleDetails_TotalAmount' => $cartProduct->total,
-					'Status' => 'a',
-					'AddBy' => $this->userFullName,
-					'AddTime' => date('Y-m-d H:i:s'),
-					'SaleDetails_BranchId' => $this->branch,
-				);
+            foreach ($data->cart as $cartProduct) {
+                $orderDetails = array(
+                    'SaleMaster_IDNo'           => $orderId,
+                    'Product_IDNo'              => $cartProduct->productId,
+                    'SaleDetails_TotalQuantity' => $cartProduct->quantity,
+                    'Purchase_Rate'             => $cartProduct->purchaseRate,
+                    'SaleDetails_Rate'          => $cartProduct->is_free != 'true' ? $cartProduct->salesRate:0,
+                    'SaleDetails_Discount'      => isset($cartProduct->discount) ? $cartProduct->discount : 0,
+                    'Discount_amount'           => isset($cartProduct->discountAmount) ? $cartProduct->discountAmount : 0,
+                    'is_free'                   => $cartProduct->is_free,
+                    'SaleDetails_TotalAmount'   => $cartProduct->is_free != 'true' ? $cartProduct->total:0,
+                    'Status'                    => 'a',
+                    'AddBy'                     => $this->userFullName,
+                    'AddTime'                   => date('Y-m-d H:i:s'),
+                    'SaleDetails_BranchId'      => $this->branch,
+                );
 
-				$this->db->insert('tbl_saledetails', $orderDetails);
+                $this->db->insert('tbl_saledetails', $orderDetails);
 
-				//update stock
-				$this->db->query("
+                //update stock
+                $this->db->query("
                     update tbl_currentinventory 
                     set sales_quantity = sales_quantity + ? 
                     where product_id = ?
                     and branch_id = ?
                 ", [$cartProduct->quantity, $cartProduct->productId, $this->branch]);
-			}
+            }
 
             $res = ['success' => true, 'message' => 'Order Success'];
-
         } catch (\Exception $ex) {
             $res = ['success' => false, 'message' => $ex->getMessage()];
-		}
+        }
 
-		echo json_encode($res);
+        echo json_encode($res);
     }
 
-	public function updateSales()
-	{
-		$res = ['success' => false, 'message' => ''];
-		try {
-			$data = json_decode($this->input->raw_input_stream);
-			$salesId = $data->sales->salesId;
+    public function updateSales()
+    {
+        $res = ['success' => false, 'message' => ''];
+        try {
+            $data = json_decode($this->input->raw_input_stream);
+            $salesId = $data->sales->salesId;
 
-			if (isset($data->customer)) {
-				$customer = (array)$data->customer;
-				unset($customer['Customer_SlNo']);
-				unset($customer['display_name']);
-				$customer['UpdateBy'] = $this->userFullName;
-				$customer['UpdateTime'] = date("Y-m-d H:i:s");
+            if (isset($data->customer)) {
+                $customer = (array)$data->customer;
+                unset($customer['Customer_SlNo']);
+                unset($customer['display_name']);
+                $customer['UpdateBy'] = $this->userFullName;
+                $customer['UpdateTime'] = date("Y-m-d H:i:s");
 
-				$this->db->where('Customer_SlNo', $data->sales->customerId)->update('tbl_customer', $customer);
-			}
-			$sales = array(
-				'SalseCustomer_IDNo' => $data->sales->customerId,
-				'employee_id' => $data->sales->employeeId,
-				'SaleMaster_SaleDate' => $data->sales->salesDate,
-				'SaleMaster_SaleType' => $data->sales->salesType,
-				'SaleMaster_TotalSaleAmount' => $data->sales->total,
-				'SaleMaster_TotalDiscountAmount' => $data->sales->discount,
-				'SaleMaster_TaxAmount' => $data->sales->vat,
-				'SaleMaster_Freight' => $data->sales->transportCost,
-				'SaleMaster_SubTotalAmount' => $data->sales->subTotal,
-				'SaleMaster_PaidAmount' => $data->sales->paid,
-				'SaleMaster_DueAmount' => $data->sales->due,
-				'SaleMaster_Previous_Due' => $data->sales->previousDue,
-				'SaleMaster_Description' => $data->sales->note,
-				"UpdateBy" => $this->userFullName,
-				'UpdateTime' => date("Y-m-d H:i:s"),
-				"SaleMaster_branchid" => $this->branch
-			);
+                $this->db->where('Customer_SlNo', $data->sales->customerId)->update('tbl_customer', $customer);
+            }
+            $sales = array(
+                'SalseCustomer_IDNo' => $data->sales->customerId,
+                'employee_id' => $data->sales->employeeId,
+                'SaleMaster_SaleDate' => $data->sales->salesDate,
+                'SaleMaster_SaleType' => $data->sales->salesType,
+                'SaleMaster_TotalSaleAmount' => $data->sales->total,
+                'SaleMaster_TotalDiscountAmount' => $data->sales->discount,
+                'SaleMaster_TaxAmount' => $data->sales->vat,
+                'SaleMaster_Freight' => $data->sales->transportCost,
+                'SaleMaster_SubTotalAmount' => $data->sales->subTotal,
+                'SaleMaster_PaidAmount' => $data->sales->paid,
+                'SaleMaster_DueAmount' => $data->sales->due,
+                'SaleMaster_Previous_Due' => $data->sales->previousDue,
+                'SaleMaster_Description' => $data->sales->note,
+                "UpdateBy" => $this->userFullName,
+                'UpdateTime' => date("Y-m-d H:i:s"),
+                "SaleMaster_branchid" => $this->branch
+            );
 
-			$this->db->where('SaleMaster_SlNo', $salesId);
-			$this->db->update('tbl_salesmaster', $sales);
+            $this->db->where('SaleMaster_SlNo', $salesId);
+            $this->db->update('tbl_salesmaster', $sales);
 
-			$currentSaleDetails = $this->db->query("select * from tbl_saledetails where SaleMaster_IDNo = ?", $salesId)->result();
-			$this->db->query("delete from tbl_saledetails where SaleMaster_IDNo = ?", $salesId);
+            $currentSaleDetails = $this->db->query("select * from tbl_saledetails where SaleMaster_IDNo = ?", $salesId)->result();
+            $this->db->query("delete from tbl_saledetails where SaleMaster_IDNo = ?", $salesId);
 
-			foreach ($currentSaleDetails as $product) {
-				$this->db->query("
+            foreach ($currentSaleDetails as $product) {
+                $this->db->query("
                     update tbl_currentinventory 
                     set sales_quantity = sales_quantity - ? 
                     where product_id = ?
                     and cat_id =? 
                     and branch_id = ?
                 ", [$product->SaleDetails_TotalQuantity, $product->Product_IDNo, $product->cat_id, $product->SaleDetails_BranchId]);
-			}
+            }
 
-			foreach ($data->cart as $cartProduct) {
-				$saleDetails = array(
-					'SaleMaster_IDNo' => $salesId,
-					'Product_IDNo' => $cartProduct->productId,
-					'SaleDetails_TotalQuantity' => $cartProduct->quantity,
-					'Purchase_Rate' => $cartProduct->purchaseRate,
-					'SaleDetails_Rate' => $cartProduct->salesRate,
-					'SaleDetails_Tax' => $cartProduct->vat,
-					'SaleDetails_TotalAmount' => $cartProduct->total,
-					'Status' => 'a',
-					'AddBy' => $this->userFullName,
-					'AddTime' => date('Y-m-d H:i:s'),
-					'SaleDetails_BranchId' => $cartProduct->branchId,
-					'cat_id' => $cartProduct->categoryId
-				);
+            foreach ($data->cart as $cartProduct) {
+                $saleDetails = array(
+                    'SaleMaster_IDNo' => $salesId,
+                    'Product_IDNo' => $cartProduct->productId,
+                    'SaleDetails_TotalQuantity' => $cartProduct->quantity,
+                    'Purchase_Rate' => $cartProduct->purchaseRate,
+                    'SaleDetails_Rate' => $cartProduct->salesRate,
+                    'SaleDetails_Tax' => $cartProduct->vat,
+                    'SaleDetails_TotalAmount' => $cartProduct->total,
+                    'Status' => 'a',
+                    'AddBy' => $this->userFullName,
+                    'AddTime' => date('Y-m-d H:i:s'),
+                    'SaleDetails_BranchId' => $cartProduct->branchId,
+                    'cat_id' => $cartProduct->categoryId
+                );
 
-				$this->db->insert('tbl_saledetails', $saleDetails);
+                $this->db->insert('tbl_saledetails', $saleDetails);
 
-				$this->db->query("
+                $this->db->query("
                     update tbl_currentinventory 
                     set sales_quantity = sales_quantity + ? 
                     where product_id = ?
                     and branch_id = ?
                     and cat_id=?
                 ", [$cartProduct->quantity, $cartProduct->productId, $cartProduct->branchId, $cartProduct->categoryId]);
-			}
+            }
 
-			$res = ['success' => true, 'message' => 'Sales Updated', 'salesId' => $salesId];
-		} catch (Exception $ex) {
-			$res = ['success' => false, 'message' => $ex->getMessage()];
-		}
+            $res = ['success' => true, 'message' => 'Sales Updated', 'salesId' => $salesId];
+        } catch (Exception $ex) {
+            $res = ['success' => false, 'message' => $ex->getMessage()];
+        }
 
-		echo json_encode($res);
-	}
+        echo json_encode($res);
+    }
 
-	public function getSaleDetails()
-	{
-		$data = json_decode($this->input->raw_input_stream);
+    public function getSaleDetails()
+    {
+        $data = json_decode($this->input->raw_input_stream);
 
-		$clauses = "";
-		if (isset($data->customerId) && $data->customerId != '') {
-			$clauses .= " and c.Customer_SlNo = '$data->customerId'";
-		}
+        $clauses = "";
+        if (isset($data->customerId) && $data->customerId != '') {
+            $clauses .= " and c.Customer_SlNo = '$data->customerId'";
+        }
 
-		if (isset($data->productId) && $data->productId != '') {
-			$clauses .= " and p.Product_SlNo = '$data->productId'";
-		}
+        if (isset($data->productId) && $data->productId != '') {
+            $clauses .= " and p.Product_SlNo = '$data->productId'";
+        }
 
-		if (isset($data->categoryId) && $data->categoryId != '') {
-			$clauses .= " and pc.ProductCategory_SlNo = '$data->categoryId'";
-		}
+        if (isset($data->categoryId) && $data->categoryId != '') {
+            $clauses .= " and pc.ProductCategory_SlNo = '$data->categoryId'";
+        }
 
-		if (isset($data->dateFrom) && $data->dateFrom != '' && isset($data->dateTo) && $data->dateTo != '') {
-			$clauses .= " and sm.SaleMaster_SaleDate between '$data->dateFrom' and '$data->dateTo'";
-		}
+        if (isset($data->dateFrom) && $data->dateFrom != '' && isset($data->dateTo) && $data->dateTo != '') {
+            $clauses .= " and sm.SaleMaster_SaleDate between '$data->dateFrom' and '$data->dateTo'";
+        }
 
-		$saleDetails = $this->db->query("
+        $saleDetails = $this->db->query("
             select 
                 sd.*,
                 p.Product_Code,
@@ -341,42 +345,42 @@ class SalesController extends CI_Controller
             $clauses
         ", $this->branch)->result();
 
-		echo json_encode($saleDetails);
-	}
+        echo json_encode($saleDetails);
+    }
 
-	public function getSales()
-	{
-        
-		$data = json_decode($this->input->raw_input_stream);
-		$branchId = $this->branch;
+    public function getSales()
+    {
 
-		$clauses = "";
-		if (isset($data->dateFrom) && $data->dateFrom != '' && isset($data->dateTo) && $data->dateTo != '') {
-			$clauses .= " and sm.SaleMaster_SaleDate between '$data->dateFrom' and '$data->dateTo'";
-		}
+        $data = json_decode($this->input->raw_input_stream);
+        $branchId = $this->branch;
 
-		if (isset($data->userFullName) && $data->userFullName != '') {
-			$clauses .= " and sm.AddBy = '$data->userFullName'";
-		}
+        $clauses = "";
+        if (isset($data->dateFrom) && $data->dateFrom != '' && isset($data->dateTo) && $data->dateTo != '') {
+            $clauses .= " and sm.SaleMaster_SaleDate between '$data->dateFrom' and '$data->dateTo'";
+        }
 
-		if (isset($data->customerId) && $data->customerId != '') {
-			$clauses .= " and sm.SalseCustomer_IDNo = '$data->customerId'";
-		}
+        if (isset($data->userFullName) && $data->userFullName != '') {
+            $clauses .= " and sm.AddBy = '$data->userFullName'";
+        }
 
-		if (isset($data->employeeId) && $data->employeeId != '') {
-			$clauses .= " and sm.employee_id = '$data->employeeId'";
-		}
+        if (isset($data->customerId) && $data->customerId != '') {
+            $clauses .= " and sm.SalseCustomer_IDNo = '$data->customerId'";
+        }
 
-		if (isset($data->productId) && $data->productId != '') {
-			$clauses .= " and sd.Product_IDNo = '$data->productId'";
-		}
+        if (isset($data->employeeId) && $data->employeeId != '') {
+            $clauses .= " and sm.employee_id = '$data->employeeId'";
+        }
 
-		// 		echo $data->salesId;
-		// 	    exit;
+        if (isset($data->productId) && $data->productId != '') {
+            $clauses .= " and sd.Product_IDNo = '$data->productId'";
+        }
 
-		if (isset($data->salesId) && $data->salesId != 0 && $data->salesId != '') {
-			$clauses .= " and SaleMaster_SlNo = '$data->salesId'";
-			$saleDetails = $this->db->query("
+        // 		echo $data->salesId;
+        // 	    exit;
+
+        if (isset($data->salesId) && $data->salesId != 0 && $data->salesId != '') {
+            $clauses .= " and SaleMaster_SlNo = '$data->salesId'";
+            $saleDetails = $this->db->query("
                 select 
                     sd.*,
                     p.Product_Name,
@@ -392,9 +396,9 @@ class SalesController extends CI_Controller
                 where sd.SaleMaster_IDNo = ?
             ", $data->salesId)->result();
 
-			$res['saleDetails'] = $saleDetails;
-		}
-		$sales = $this->db->query("
+            $res['saleDetails'] = $saleDetails;
+        }
+        $sales = $this->db->query("
             select 
             sm.*,
             c.Customer_Code,
@@ -415,77 +419,77 @@ class SalesController extends CI_Controller
             order by sm.SaleMaster_SlNo desc
         ")->result();
 
-		$res['sales'] = $sales;
+        $res['sales'] = $sales;
 
-		echo json_encode($res);
-	}
+        echo json_encode($res);
+    }
 
-	public function  deleteSales()
-	{
-		$res = ['success' => false, 'message' => ''];
-		try {
-			$data = json_decode($this->input->raw_input_stream);
-			$saleId = $data->saleId;
+    public function  deleteSales()
+    {
+        $res = ['success' => false, 'message' => ''];
+        try {
+            $data = json_decode($this->input->raw_input_stream);
+            $saleId = $data->saleId;
 
-			$sale = $this->db->select('*')->where('SaleMaster_SlNo', $saleId)->get('tbl_salesmaster')->row();
-			if ($sale->Status != 'a') {
-				$res = ['success' => false, 'message' => 'Sale not found'];
-				echo json_encode($res);
-				exit;
-			}
+            $sale = $this->db->select('*')->where('SaleMaster_SlNo', $saleId)->get('tbl_salesmaster')->row();
+            if ($sale->Status != 'a') {
+                $res = ['success' => false, 'message' => 'Sale not found'];
+                echo json_encode($res);
+                exit;
+            }
 
-			/*Get Sale Details Data*/
-			$saleDetails = $this->db->select('Product_IDNo, SaleDetails_TotalQuantity,cat_id,SaleDetails_BranchId')->where('SaleMaster_IDNo', $saleId)->get('tbl_saledetails')->result();
+            /*Get Sale Details Data*/
+            $saleDetails = $this->db->select('Product_IDNo, SaleDetails_TotalQuantity,cat_id,SaleDetails_BranchId')->where('SaleMaster_IDNo', $saleId)->get('tbl_saledetails')->result();
 
-			foreach ($saleDetails as $detail) {
-				/*Get Product Current Quantity*/
-				$totalQty = $this->db->where(['product_id' => $detail->Product_IDNo, 'cat_id' => $detail->cat_id, 'branch_id' => $detail->SaleDetails_BranchId])->get('tbl_currentinventory')->row()->sales_quantity;
+            foreach ($saleDetails as $detail) {
+                /*Get Product Current Quantity*/
+                $totalQty = $this->db->where(['product_id' => $detail->Product_IDNo, 'cat_id' => $detail->cat_id, 'branch_id' => $detail->SaleDetails_BranchId])->get('tbl_currentinventory')->row()->sales_quantity;
 
-				/* Subtract Product Quantity form  Current Quantity  */
-				$newQty = $totalQty - $detail->SaleDetails_TotalQuantity;
+                /* Subtract Product Quantity form  Current Quantity  */
+                $newQty = $totalQty - $detail->SaleDetails_TotalQuantity;
 
-				/*Update Sales Inventory*/
-				$this->db->set('sales_quantity', $newQty)->where(['product_id' => $detail->Product_IDNo, 'cat_id' => $detail->cat_id,  'branch_id' => $detail->SaleDetails_BranchId])->update('tbl_currentinventory');
-			}
+                /*Update Sales Inventory*/
+                $this->db->set('sales_quantity', $newQty)->where(['product_id' => $detail->Product_IDNo, 'cat_id' => $detail->cat_id,  'branch_id' => $detail->SaleDetails_BranchId])->update('tbl_currentinventory');
+            }
 
-			/*Delete Sale Details*/
-			$this->db->set('Status', 'd')->where('SaleMaster_IDNo', $saleId)->update('tbl_saledetails');
+            /*Delete Sale Details*/
+            $this->db->set('Status', 'd')->where('SaleMaster_IDNo', $saleId)->update('tbl_saledetails');
 
-			/*Delete Sale Master Data*/
-			$this->db->set('Status', 'd')->where('SaleMaster_SlNo', $saleId)->update('tbl_salesmaster');
-			$res = ['success' => true, 'message' => 'Sale deleted'];
-		} catch (Exception $ex) {
-			$res = ['success' => false, 'message' => $ex->getMessage()];
-		}
+            /*Delete Sale Master Data*/
+            $this->db->set('Status', 'd')->where('SaleMaster_SlNo', $saleId)->update('tbl_salesmaster');
+            $res = ['success' => true, 'message' => 'Sale deleted'];
+        } catch (Exception $ex) {
+            $res = ['success' => false, 'message' => $ex->getMessage()];
+        }
 
-		echo json_encode($res);
-	}
+        echo json_encode($res);
+    }
 
-	public function getSalesRecord()
-	{
+    public function getSalesRecord()
+    {
 
-		$data = json_decode($this->input->raw_input_stream);
+        $data = json_decode($this->input->raw_input_stream);
 
-		$branchId = $this->branch;
+        $branchId = $this->branch;
 
-		$clauses = "";
-		if (isset($data->dateFrom) && $data->dateFrom != '' && isset($data->dateTo) && $data->dateTo != '') {
-			$clauses .= " and sm.SaleMaster_SaleDate between '$data->dateFrom' and '$data->dateTo'";
-		}
+        $clauses = "";
+        if (isset($data->dateFrom) && $data->dateFrom != '' && isset($data->dateTo) && $data->dateTo != '') {
+            $clauses .= " and sm.SaleMaster_SaleDate between '$data->dateFrom' and '$data->dateTo'";
+        }
 
-		if (isset($data->userFullName) && $data->userFullName != '') {
-			$clauses .= " and sm.AddBy = '$data->userFullName'";
-		}
+        if (isset($data->userFullName) && $data->userFullName != '') {
+            $clauses .= " and sm.AddBy = '$data->userFullName'";
+        }
 
-		if (isset($data->customerId) && $data->customerId != '') {
-			$clauses .= " and sm.SalseCustomer_IDNo = '$data->customerId'";
-		}
+        if (isset($data->customerId) && $data->customerId != '') {
+            $clauses .= " and sm.SalseCustomer_IDNo = '$data->customerId'";
+        }
 
-		if (isset($data->employeeId) && $data->employeeId != '') {
-			$clauses .= " and sm.employee_id = '$data->employeeId'";
-		}
+        if (isset($data->employeeId) && $data->employeeId != '') {
+            $clauses .= " and sm.employee_id = '$data->employeeId'";
+        }
 
-		$sales = $this->db->query("
+        $sales = $this->db->query("
             select 
                 sm.*,
                 c.Customer_Code,
@@ -509,8 +513,8 @@ class SalesController extends CI_Controller
             order by sm.SaleMaster_SlNo desc
         ")->result();
 
-		foreach ($sales as $sale) {
-			$sale->saleDetails = $this->db->query("
+        foreach ($sales as $sale) {
+            $sale->saleDetails = $this->db->query("
                 select 
                     sd.*,
                     p.Product_Name,
@@ -521,10 +525,10 @@ class SalesController extends CI_Controller
                 where sd.SaleMaster_IDNo = ?
                 and sd.Status != 'd'
             ", $sale->SaleMaster_SlNo)->result();
-		}
+        }
 
-		echo json_encode($sales);
-	}
+        echo json_encode($sales);
+    }
 
     public function getProfitLoss()
     {
@@ -604,28 +608,28 @@ class SalesController extends CI_Controller
         echo json_encode($sales);
     }
 
-	public function getSaleSummary()
-	{
-		$data = json_decode($this->input->raw_input_stream);
+    public function getSaleSummary()
+    {
+        $data = json_decode($this->input->raw_input_stream);
 
-		$clauses = "";
-		// if (isset($data->customerId) && $data->customerId != '') {
-		//     $clauses .= " and c.Customer_SlNo = '$data->customerId'";
-		// }
+        $clauses = "";
+        // if (isset($data->customerId) && $data->customerId != '') {
+        //     $clauses .= " and c.Customer_SlNo = '$data->customerId'";
+        // }
 
-		if (isset($data->productId) && $data->productId != '') {
-			$clauses .= " and p.Product_SlNo = '$data->productId'";
-		}
+        if (isset($data->productId) && $data->productId != '') {
+            $clauses .= " and p.Product_SlNo = '$data->productId'";
+        }
 
-		// if (isset($data->categoryId) && $data->categoryId != '') {
-		//     $clauses .= " and pc.ProductCategory_SlNo = '$data->categoryId'";
-		// }
+        // if (isset($data->categoryId) && $data->categoryId != '') {
+        //     $clauses .= " and pc.ProductCategory_SlNo = '$data->categoryId'";
+        // }
 
-		if (isset($data->dateFrom) && $data->dateFrom != '' && isset($data->dateTo) && $data->dateTo != '') {
-			$clauses .= " and sm.SaleMaster_SaleDate between '$data->dateFrom' and '$data->dateTo'";
-		}
+        if (isset($data->dateFrom) && $data->dateFrom != '' && isset($data->dateTo) && $data->dateTo != '') {
+            $clauses .= " and sm.SaleMaster_SaleDate between '$data->dateFrom' and '$data->dateTo'";
+        }
 
-		$saleDetails = $this->db->query("
+        $saleDetails = $this->db->query("
             select 
                 p.*,
                 sum(sd.SaleDetails_TotalQuantity) as totalSaleQty,
@@ -642,30 +646,30 @@ class SalesController extends CI_Controller
             group by p.Product_SlNo 
         ", $this->branch)->result();
 
-		echo json_encode($saleDetails);
-	}
+        echo json_encode($saleDetails);
+    }
 
-	public function getSaleInvoice()
-	{
-		$invoice = $this->mt->generateSalesInvoice();
-		echo json_encode($invoice);
-	}
+    public function getSaleInvoice()
+    {
+        $invoice = $this->mt->generateSalesInvoice();
+        echo json_encode($invoice);
+    }
 
-	public function getTopData()
-	{
-		$data = json_decode($this->input->raw_input_stream);
-		$branchId = $this->branch;
-		
-		$dateTo = date('Y-m-d');
-// 		$d = strtotime("-1 month");
-	   // $dateFrom = date("Y-m-d", $d);
-	    $dateFrom = date('Y-m-d');
-	    
-	    $today = date('Y-m-d');
-	    $monthFirstDay = date('Y-m-01', strtotime($today));
-	    $monthLastDay = date('Y-m-t', strtotime($today));
+    public function getTopData()
+    {
+        $data = json_decode($this->input->raw_input_stream);
+        $branchId = $this->branch;
 
-		$res['todaySale'] = $this->db->query("
+        $dateTo = date('Y-m-d');
+        // 		$d = strtotime("-1 month");
+        // $dateFrom = date("Y-m-d", $d);
+        $dateFrom = date('Y-m-d');
+
+        $today = date('Y-m-d');
+        $monthFirstDay = date('Y-m-01', strtotime($today));
+        $monthLastDay = date('Y-m-t', strtotime($today));
+
+        $res['todaySale'] = $this->db->query("
 		    select 
             	ifnull(sum(sm.SaleMaster_TotalSaleAmount), 0) as total
             from tbl_salesmaster sm
@@ -673,8 +677,8 @@ class SalesController extends CI_Controller
             and sm.Status = 'a'
             and sm.SaleMaster_SaleDate between '$dateFrom' and '$dateTo'
             ", $this->branch)->row()->total;
-		
-		$res['monthlySale'] = $this->db->query("
+
+        $res['monthlySale'] = $this->db->query("
 		    select 
             	ifnull(sum(sm.SaleMaster_TotalSaleAmount), 0) as total
             from tbl_salesmaster sm
@@ -682,7 +686,7 @@ class SalesController extends CI_Controller
             and sm.Status = 'a'
             and sm.SaleMaster_SaleDate between '$monthFirstDay' and '$monthLastDay'
             ", $this->branch)->row()->total;
-		
+
         $totalDue = $this->db->query("
 	        select * from (
 	           select
@@ -749,14 +753,14 @@ class SalesController extends CI_Controller
 	        
 	        ) as tbl
         ")->row()->dueAmount;
-        
+
         $res['totalDue'] = $totalDue;
-        
+
         $res['cashBalance'] =  $this->db->query("SELECT
             /* Received */
             (
                   select ifnull(sum(sm.SaleMaster_PaidAmount), 0) from tbl_salesmaster sm
-                where sm.SaleMaster_branchid= " . $this->branch ."
+                where sm.SaleMaster_branchid= " . $this->branch . "
                 and sm.Status = 'a'
             ) as received_sales,
             (
@@ -764,26 +768,26 @@ class SalesController extends CI_Controller
                 where cp.CPayment_TransactionType = 'CR'
                 and cp.CPayment_status = 'a'
                 and cp.CPayment_Paymentby != 'bank'
-                and cp.CPayment_brunchid= " . $this->branch ."
+                and cp.CPayment_brunchid= " . $this->branch . "
             ) as received_customer,
             (
                    select ifnull(sum(sp.SPayment_amount), 0) from tbl_supplier_payment sp
                 where sp.SPayment_TransactionType = 'CR'
                 and sp.SPayment_status = 'a'
                 and sp.SPayment_Paymentby != 'bank'
-                and sp.SPayment_brunchid= " . $this->branch ."
+                and sp.SPayment_brunchid= " . $this->branch . "
             ) as received_supplier,
             (
                   select ifnull(sum(ct.In_Amount), 0) from tbl_cashtransaction ct
                 where ct.Tr_Type = 'In Cash'
                 and ct.status = 'a'
-                and ct.Tr_branchid= " . $this->branch ."
+                and ct.Tr_branchid= " . $this->branch . "
             ) as received_cash,
             (
                  select ifnull(sum(bt.amount), 0) from tbl_bank_transactions bt
                 where bt.transaction_type = 'withdraw'
                 and bt.status = 1
-                and bt.branch_id= " . $this->branch ."
+                and bt.branch_id= " . $this->branch . "
             ) as bank_withdraw,
             
             /* paid */
@@ -791,13 +795,13 @@ class SalesController extends CI_Controller
             (
                 select ifnull(sum(pm.PurchaseMaster_PaidAmount), 0) from tbl_purchasemaster pm
                 where pm.status = 'a'
-                and pm.PurchaseMaster_BranchID= " . $this->branch ."
+                and pm.PurchaseMaster_BranchID= " . $this->branch . "
             ) as paid_purchase,
 
 			(
                 select ifnull(sum(pm.own_freight), 0) from tbl_purchasemaster pm
                 where pm.status = 'a'
-                and pm.PurchaseMaster_BranchID= " . $this->branch ."
+                and pm.PurchaseMaster_BranchID= " . $this->branch . "
             ) as own_freight,
 
             (
@@ -805,7 +809,7 @@ class SalesController extends CI_Controller
                 where sp.SPayment_TransactionType = 'CP'
                 and sp.SPayment_status = 'a'
                 and sp.SPayment_Paymentby != 'bank'
-                and sp.SPayment_brunchid= " . $this->branch ."
+                and sp.SPayment_brunchid= " . $this->branch . "
             ) as paid_supplier,
 
             (
@@ -813,21 +817,21 @@ class SalesController extends CI_Controller
                 where cp.CPayment_TransactionType = 'CP'
                 and cp.CPayment_status = 'a'
                 and cp.CPayment_Paymentby != 'bank'
-                and cp.CPayment_brunchid= " . $this->branch ."
+                and cp.CPayment_brunchid= " . $this->branch . "
             ) as paid_customer,
 
             (
                 select ifnull(sum(ct.Out_Amount), 0) from tbl_cashtransaction ct
                 where ct.Tr_Type = 'Out Cash'
                 and ct.status = 'a'
-                and ct.Tr_branchid= " . $this->branch ."
+                and ct.Tr_branchid= " . $this->branch . "
             ) as paid_cash,
 
             (
              select ifnull(sum(bt.amount), 0) from tbl_bank_transactions bt
                 where bt.transaction_type = 'deposit'
                 and bt.status = 1
-                and bt.branch_id= " . $this->branch ."
+                and bt.branch_id= " . $this->branch . "
             ) as bank_deposit,
 
             (
@@ -848,24 +852,25 @@ class SalesController extends CI_Controller
                 select total_in - total_out
             ) as cash_balance
         ")->row()->cash_balance;
-		
-		echo json_encode($res);
-	}
 
-	public function getGraphData()
-	{
-		$inputs = json_decode($this->input->raw_input_stream);
-		// Monthly Record
-		$monthlyRecord = [];
-		$year = date('Y');
-		$month = date('m');
-		$dayNumber = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-		for ($i = 1;
-			$i <= $dayNumber;
-			$i++
-		) {
-			$date = $year . '-' . $month . '-' . sprintf("%02d", $i);
-			$query = $this->db->query("
+        echo json_encode($res);
+    }
+
+    public function getGraphData()
+    {
+        $inputs = json_decode($this->input->raw_input_stream);
+        // Monthly Record
+        $monthlyRecord = [];
+        $year = date('Y');
+        $month = date('m');
+        $dayNumber = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+        for (
+            $i = 1;
+            $i <= $dayNumber;
+            $i++
+        ) {
+            $date = $year . '-' . $month . '-' . sprintf("%02d", $i);
+            $query = $this->db->query("
                     select ifnull(sum(sm.SaleMaster_TotalSaleAmount), 0) as sales_amount 
                     from tbl_salesmaster sm 
                     where sm.SaleMaster_SaleDate = ?
@@ -874,24 +879,25 @@ class SalesController extends CI_Controller
                     group by sm.SaleMaster_SaleDate
                 ", [$date, $this->branch]);
 
-			$amount = 0.00;
+            $amount = 0.00;
 
-			if ($query->num_rows() == 0) {
-				$amount = 0.00;
-			} else {
-				$amount = $query->row()->sales_amount;
-			}
-			$sale = [sprintf("%02d", $i), $amount];
-			array_push($monthlyRecord, $sale);
-		}
+            if ($query->num_rows() == 0) {
+                $amount = 0.00;
+            } else {
+                $amount = $query->row()->sales_amount;
+            }
+            $sale = [sprintf("%02d", $i), $amount];
+            array_push($monthlyRecord, $sale);
+        }
 
-		$yearlyRecord = [];
-		for ($i = 1;
-			$i <= 12;
-			$i++
-		) {
-			$yearMonth = $year . sprintf("%02d", $i);
-			$query = $this->db->query("
+        $yearlyRecord = [];
+        for (
+            $i = 1;
+            $i <= 12;
+            $i++
+        ) {
+            $yearMonth = $year . sprintf("%02d", $i);
+            $query = $this->db->query("
                     select ifnull(sum(sm.SaleMaster_TotalSaleAmount), 0) as sales_amount 
                     from tbl_salesmaster sm 
                     where extract(year_month from sm.SaleMaster_SaleDate) = ?
@@ -900,20 +906,20 @@ class SalesController extends CI_Controller
                     group by extract(year_month from sm.SaleMaster_SaleDate)
                 ", [$yearMonth, $this->branch]);
 
-			$amount = 0.00;
-			$monthName = date("M", mktime(0, 0, 0, $i, 10));
+            $amount = 0.00;
+            $monthName = date("M", mktime(0, 0, 0, $i, 10));
 
-			if ($query->num_rows() == 0) {
-				$amount = 0.00;
-			} else {
-				$amount = $query->row()->sales_amount;
-			}
-			$sale = [$monthName, $amount];
-			array_push($yearlyRecord, $sale);
-		}
+            if ($query->num_rows() == 0) {
+                $amount = 0.00;
+            } else {
+                $amount = $query->row()->sales_amount;
+            }
+            $sale = [$monthName, $amount];
+            array_push($yearlyRecord, $sale);
+        }
 
-		// Sales text for marquee
-		$sales = $this->db->query("
+        // Sales text for marquee
+        $sales = $this->db->query("
                 select 
                     concat(
                         'Invoice: ', sm.SaleMaster_InvoiceNo,
@@ -929,8 +935,8 @@ class SalesController extends CI_Controller
                 order by sm.SaleMaster_SlNo desc limit 20
             ", $this->branch)->result();
 
-		// Today's Sale
-		$todaysSale = $this->db->query("
+        // Today's Sale
+        $todaysSale = $this->db->query("
                 select 
                     ifnull(sum(ifnull(sm.SaleMaster_TotalSaleAmount, 0)), 0) as total_amount
                 from tbl_salesmaster sm
@@ -939,8 +945,8 @@ class SalesController extends CI_Controller
                 and sm.SaleMaster_branchid = ?
             ", [date('Y-m-d'), $this->branch])->row()->total_amount;
 
-		// This Month's Sale
-		$thisMonthSale = $this->db->query("
+        // This Month's Sale
+        $thisMonthSale = $this->db->query("
                 select 
                     ifnull(sum(ifnull(sm.SaleMaster_TotalSaleAmount, 0)), 0) as total_amount
                 from tbl_salesmaster sm
@@ -950,15 +956,15 @@ class SalesController extends CI_Controller
                 and sm.SaleMaster_branchid = ?
             ", [date('m'), date('Y'), $this->branch])->row()->total_amount;
 
-		// Today's Cash Collection
-		$todaysCollection = $this->db->query("
+        // Today's Cash Collection
+        $todaysCollection = $this->db->query("
                 select 
                 ifnull((
                     select sum(ifnull(sm.SaleMaster_PaidAmount, 0)) 
                     from tbl_salesmaster sm
                     where sm.Status = 'a' 
                     and sm.SaleMaster_branchid = " . $this->branch . "
-                    and sm.SaleMaster_SaleDate = '" . date('Y-m-d') ."'
+                    and sm.SaleMaster_SaleDate = '" . date('Y-m-d') . "'
                 ), 0) +
                 ifnull((
                     select sum(ifnull(cp.CPayment_amount, 0)) 
@@ -966,7 +972,7 @@ class SalesController extends CI_Controller
                     where cp.CPayment_status = 'a'
                     and cp.CPayment_TransactionType = 'CR'
                     and cp.CPayment_brunchid = " . $this->branch . "
-                    and cp.CPayment_date = '" . date('Y-m-d') ."'
+                    and cp.CPayment_date = '" . date('Y-m-d') . "'
                 ), 0) +
                 ifnull((
                     select sum(ifnull(ct.In_Amount, 0)) 
@@ -978,24 +984,24 @@ class SalesController extends CI_Controller
             ")->row()->total_amount;
 
 
-		// Cash Balance
-		// $cashBalance = $this->mt->getTransactionSummary()->cash_balance;
+        // Cash Balance
+        // $cashBalance = $this->mt->getTransactionSummary()->cash_balance;
 
 
 
 
-		// Customer Due
+        // Customer Due
 
-		// $customerDueResult = $this->mt->customerDue();
-		// $customerDue = array_sum(array_map(function ($due) {
-		// 	return $due->dueAmount;
-		// }, $customerDueResult));
+        // $customerDueResult = $this->mt->customerDue();
+        // $customerDue = array_sum(array_map(function ($due) {
+        // 	return $due->dueAmount;
+        // }, $customerDueResult));
 
-		$cashBalance =  $this->db->query("SELECT
+        $cashBalance =  $this->db->query("SELECT
             /* Received */
             (
                   select ifnull(sum(sm.SaleMaster_PaidAmount), 0) from tbl_salesmaster sm
-                where sm.SaleMaster_branchid= " . $this->branch ."
+                where sm.SaleMaster_branchid= " . $this->branch . "
                 and sm.Status = 'a'
             ) as received_sales,
             (
@@ -1003,26 +1009,26 @@ class SalesController extends CI_Controller
                 where cp.CPayment_TransactionType = 'CR'
                 and cp.CPayment_status = 'a'
                 and cp.CPayment_Paymentby != 'bank'
-                and cp.CPayment_brunchid= " . $this->branch ."
+                and cp.CPayment_brunchid= " . $this->branch . "
             ) as received_customer,
             (
                    select ifnull(sum(sp.SPayment_amount), 0) from tbl_supplier_payment sp
                 where sp.SPayment_TransactionType = 'CR'
                 and sp.SPayment_status = 'a'
                 and sp.SPayment_Paymentby != 'bank'
-                and sp.SPayment_brunchid= " . $this->branch ."
+                and sp.SPayment_brunchid= " . $this->branch . "
             ) as received_supplier,
             (
                   select ifnull(sum(ct.In_Amount), 0) from tbl_cashtransaction ct
                 where ct.Tr_Type = 'In Cash'
                 and ct.status = 'a'
-                and ct.Tr_branchid= " . $this->branch ."
+                and ct.Tr_branchid= " . $this->branch . "
             ) as received_cash,
             (
                  select ifnull(sum(bt.amount), 0) from tbl_bank_transactions bt
                 where bt.transaction_type = 'withdraw'
                 and bt.status = 1
-                and bt.branch_id= " . $this->branch ."
+                and bt.branch_id= " . $this->branch . "
             ) as bank_withdraw,
             
             /* paid */
@@ -1030,13 +1036,13 @@ class SalesController extends CI_Controller
             (
                 select ifnull(sum(pm.PurchaseMaster_PaidAmount), 0) from tbl_purchasemaster pm
                 where pm.status = 'a'
-                and pm.PurchaseMaster_BranchID= " . $this->branch ."
+                and pm.PurchaseMaster_BranchID= " . $this->branch . "
             ) as paid_purchase,
 
 			(
                 select ifnull(sum(pm.own_freight), 0) from tbl_purchasemaster pm
                 where pm.status = 'a'
-                and pm.PurchaseMaster_BranchID= " . $this->branch ."
+                and pm.PurchaseMaster_BranchID= " . $this->branch . "
             ) as own_freight,
 
             (
@@ -1044,7 +1050,7 @@ class SalesController extends CI_Controller
                 where sp.SPayment_TransactionType = 'CP'
                 and sp.SPayment_status = 'a'
                 and sp.SPayment_Paymentby != 'bank'
-                and sp.SPayment_brunchid= " . $this->branch ."
+                and sp.SPayment_brunchid= " . $this->branch . "
             ) as paid_supplier,
 
             (
@@ -1052,21 +1058,21 @@ class SalesController extends CI_Controller
                 where cp.CPayment_TransactionType = 'CP'
                 and cp.CPayment_status = 'a'
                 and cp.CPayment_Paymentby != 'bank'
-                and cp.CPayment_brunchid= " . $this->branch ."
+                and cp.CPayment_brunchid= " . $this->branch . "
             ) as paid_customer,
 
             (
                 select ifnull(sum(ct.Out_Amount), 0) from tbl_cashtransaction ct
                 where ct.Tr_Type = 'Out Cash'
                 and ct.status = 'a'
-                and ct.Tr_branchid= " . $this->branch ."
+                and ct.Tr_branchid= " . $this->branch . "
             ) as paid_cash,
 
             (
              select ifnull(sum(bt.amount), 0) from tbl_bank_transactions bt
                 where bt.transaction_type = 'deposit'
                 and bt.status = 1
-                and bt.branch_id= " . $this->branch ."
+                and bt.branch_id= " . $this->branch . "
             ) as bank_deposit,
 
             (
@@ -1089,8 +1095,8 @@ class SalesController extends CI_Controller
         ")->row()->cash_balance;
 
 
-		// Total customer Due lIst
-		$dueResult = $this->db->query("
+        // Total customer Due lIst
+        $dueResult = $this->db->query("
        select
             c.Customer_SlNo,
             c.Customer_Name,
@@ -1135,19 +1141,18 @@ class SalesController extends CI_Controller
             order by c.Customer_Name asc
         ")->result();
 
-		$totalDue = 0;
-		foreach ($dueResult as $key => $due) {
-			$totalDue += $due->dueAmount;
-		}
+        $totalDue = 0;
+        foreach ($dueResult as $key => $due) {
+            $totalDue += $due->dueAmount;
+        }
 
-		$responseData = [
-			'todays_sale' => $todaysSale,
-			'this_month_sale' => $thisMonthSale,
-			 'cash_balance' => $cashBalance,
-			 'customer_due' => $totalDue,
-		];
+        $responseData = [
+            'todays_sale' => $todaysSale,
+            'this_month_sale' => $thisMonthSale,
+            'cash_balance' => $cashBalance,
+            'customer_due' => $totalDue,
+        ];
 
-		echo json_encode($responseData, JSON_NUMERIC_CHECK);
-	}
-	
+        echo json_encode($responseData, JSON_NUMERIC_CHECK);
+    }
 }
